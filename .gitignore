@@ -96,8 +96,11 @@ publish/
 *.Publish.xml
 
 # NuGet Packages Directory
-## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+SqlNoSql/packages/*
+!SqlNoSql/packages/repositories.config
+
+#Allow NuGet.exe
+!NuGet.exe
 
 # Windows Azure Build Output
 csx
