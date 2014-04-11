@@ -46,6 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocumentEnumerator.cs" />
+    <Compile Include="DocumentCollection.cs" />
+    <Compile Include="Generic\DocumentCollection.cs" />
+    <Compile Include="IDocumentStore.cs" />
+    <Compile Include="Generic\IDocumentCollection.cs" />
+    <Compile Include="IDocumentCollection.cs" />
+    <Compile Include="IDocumentStoreProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
