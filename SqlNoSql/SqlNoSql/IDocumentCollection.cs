@@ -28,13 +28,63 @@ namespace SqlNoSql
 
     public interface IDocumentCollection : IEnumerable
     {
-        dynamic this[Guid key] { get; set; }
-        dynamic Find(Guid key);
+        /// <summary>
+        /// Gets or sets the document with the specified id.
+        /// </summary>
+        /// <param name="key"></param>
+        dynamic this[Guid id] { get; set; }
+
+        /// <summary>
+        /// Gets the name of the collection.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Gets the document format used for storing objects in the collection.
+        /// </summary>
+        StorageFormat Format { get; }
+
+        /// <summary>
+        /// Gets the document with the specified id.
+        /// </summary>
+        /// <param name="key"></param>
+        dynamic Find(Guid id);
+
+        /// <summary>
+        /// Iterates over the collection and returns the first document that passes the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         dynamic Find(Func<dynamic, bool> filter);
+
+        /// <summary>
+        /// Iterates over the collection and returns the first document and its id that passes the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         KeyValuePair<Guid, dynamic> FindWithKey(Func<dynamic, bool> filter);
+
+        /// <summary>
+        /// Iterates over the collection and returns all documents that pass the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         ICollection<dynamic> Filter(Func<dynamic, bool> filter);
+
+        /// <summary>
+        /// Iterates over the collection and returns all documents and their ids that pass the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter);
+
+        /// <summary>
+        /// Adds or updates a document in the collection
+        /// </summary>
+        /// <param name="key">The key of the record</param>
+        /// <param name="item">The object that is being stored in the collection</param>
         void AddOrUpdate(Guid key, dynamic item);
-        void Remove(Guid key);
+
+        /// <summary>
+        /// Removes the document with the specified id from the collection
+        /// </summary>
+        /// <param name="key">The key of the document</param>
+        void Remove(Guid id);
     }
 }

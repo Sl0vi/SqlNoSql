@@ -20,32 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
 namespace SqlNoSql
 {
-    using System;
-    using System.Collections;
+    using SqlNoSql.Generic;
+    using System.Data;
 
-    internal class DocumentEnumerator : IEnumerator, IDisposable
+    /// <summary>
+    /// The interface used by providers for different databases.
+    /// If you want to use the document store with an unsupported database
+    /// then implement this interface.
+    /// </summary>
+    public interface IDbProvider
     {
-        public object Current
-        {
-            get { throw new NotImplementedException(); }
-        }
+        /// <summary>
+        /// Gets an unopened connection to the database.
+        /// </summary>
+        IDbConnection GetConnection();
 
-        public bool MoveNext()
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Checks if a table with the specified name exists in the database.
+        /// </summary>
+        bool TableExists(string name);
 
-        public void Reset()
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Creates a table with the specified name in the database.
+        /// </summary>
+        void CreateTable(string name);
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Drops the table with the specified name from the database.
+        /// </summary>
+        void DeleteTable(string name);
     }
 }

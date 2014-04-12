@@ -23,72 +23,95 @@
 namespace SqlNoSql
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Data;
+    using System.Reflection;
+    using System.Configuration;
+    using SqlNoSql.Generic;
 
-    public class DocumentCollection : IDocumentCollection
+    public class DocumentStore : IDocumentStore
     {
-        private IDbProvider provider { get; set; }
+        private IDbProvider provider;
 
-        public string Name { get; private set; }
+        public DocumentStoreSettings Settings { get; set; }
 
-        public StorageFormat Format { get; private set; }
-
-        public dynamic this[Guid key]
+        public DocumentStore()
         {
-            get
-            {
-                return this.Find(key);
-            }
-            set
-            {
-                this.AddOrUpdate(key, value);
-            }
         }
 
-        public DocumentCollection(string name, IDbProvider provider)
+        public DocumentStore(string name)
         {
-            this.Name = name;
-            this.provider = provider;
         }
 
-        public dynamic Find(Guid key)
+        public DocumentStore(string connectionString, string providerName)
+        {
+        }
+
+        private void Init()
+        {
+            this.Settings = new DocumentStoreSettings();
+        }
+
+
+        public IDocumentCollection Collection(string name)
         {
             throw new NotImplementedException();
         }
 
-        public dynamic Find(Func<dynamic, bool> filter)
+        public Generic.IDocumentCollection<T> Collection<T>()
         {
             throw new NotImplementedException();
         }
 
-        public KeyValuePair<Guid, dynamic> FindWithKey(Func<dynamic, bool> filter)
+        public Generic.IDocumentCollection<T> Collection<T>(string name)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<dynamic> Filter(Func<dynamic, bool> filter)
+        public IDocumentCollection CreateCollection(string name)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter)
+        public Generic.IDocumentCollection<T> CreateCollection<T>()
         {
             throw new NotImplementedException();
         }
 
-        public void AddOrUpdate(Guid key, dynamic item)
+        public Generic.IDocumentCollection<T> CreateCollection<T>(string name)
         {
             throw new NotImplementedException();
         }
 
-        public void Remove(Guid key)
+        public void DeleteCollection<T>()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerator GetEnumerator()
+        public void DeleteCollection(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+
+        private void LoadSettings()
+        {
+        }
+
+        private void GetProvider()
+        {
+        }
+
+        public IDocumentCollection CreateCollection(string name, StorageFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Generic.IDocumentCollection<T> CreateCollection<T>(StorageFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDocumentCollection<T> CreateCollection<T>(string name, StorageFormat format)
         {
             throw new NotImplementedException();
         }

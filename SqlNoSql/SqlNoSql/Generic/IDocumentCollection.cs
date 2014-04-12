@@ -32,6 +32,8 @@ namespace SqlNoSql.Generic
     public interface IDocumentCollection<T> : IEnumerable<T>
     {
         T this[Guid key] { get; set; }
+        string Name { get; }
+        StorageFormat StorageFormat { get; }
         T Find(Guid key);
         T Find(Func<T, bool> filter);
         KeyValuePair<Guid, T> FindWithKey(Func<T, bool> filter);

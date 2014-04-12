@@ -22,12 +22,34 @@
 
 namespace SqlNoSql
 {
+    using SqlNoSql.SqlClient;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
-    public interface IDocumentStoreProvider
+    public static class DbProviderFactory
     {
+        private static Dictionary<string, Type> providers = new Dictionary<string, Type>();
+
+        static DbProviderFactory()
+        {
+            providers.Add("System.Data.SqlClient", typeof(SqlClientProvider));
+        }
+
+        public static void Register<T>()
+            where T : IDbProvider, new()
+        {
+            providers.Add(typeof(T).FullName, typeof(T));
+        }
+
+        public static void Register<T>(string name)
+        {
+            providers.Add(name, typeof(T));
+        }
+
+        private static void LoadFromConfig()
+        {
+        }
     }
 }

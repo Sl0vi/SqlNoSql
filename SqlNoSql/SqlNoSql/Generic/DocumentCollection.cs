@@ -27,23 +27,43 @@ namespace SqlNoSql.Generic
     using System.Collections;
     using System.Collections.Generic;
 
-    public class DocumentStore<T> : IDocumentCollection<T>
+    public class DocumentCollection<T> : IDocumentCollection<T>
     {
+        private IDbProvider provider;
+
+        public string Name { get; private set; }
+
+        public StorageFormat StorageFormat { get; private set; }
+
         public T this[Guid key]
         {
             get
             {
-                throw new NotImplementedException();
+                return this.Find(key);
             }
             set
             {
-                throw new NotImplementedException();
+                this.AddOrUpdate(key, value);
             }
+        }
+
+        public DocumentCollection(IDbProvider provider)
+        {
+            this.Name = typeof(T).Name;
+        }
+
+        public DocumentCollection(string name, IDbProvider provider)
+        {
+            this.Name = name;
         }
 
         public T Find(Guid key)
         {
-            throw new NotImplementedException();
+            using (var connection = provider.GetConnection())
+            {
+                connection.Open();
+                throw new NotImplementedException();
+            }
         }
 
         public T Find(Func<T, bool> filter)
@@ -85,5 +105,8 @@ namespace SqlNoSql.Generic
         {
             throw new NotImplementedException();
         }
+
+
+        
     }
 }
