@@ -24,9 +24,19 @@ namespace SqlNoSql
 {
     using System;
 
-    internal class BsonDocument
+    /// <summary>
+    /// Represents a database record serialized as JSON
+    /// </summary>
+    internal class JsonRecord
     {
+        /// <summary>
+        /// The id of the record.
+        /// </summary>
         public Guid Id { get; set; }
-        public byte[] BsonData { get; set; }
+
+        /// <summary>
+        /// The JSON serialized document.
+        /// </summary>
+        public string JsonData { get; set; }
     }
 }
