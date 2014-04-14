@@ -50,70 +50,65 @@ namespace SqlNoSql
             this.Settings = new DocumentStoreSettings();
         }
 
-
         public IDocumentCollection Collection(string name)
         {
-            throw new NotImplementedException();
+            return provider.GetCollection(name);
         }
 
-        public Generic.IDocumentCollection<T> Collection<T>()
+        public IDocumentCollection<T> Collection<T>()
         {
-            throw new NotImplementedException();
+            return provider.GetCollection<T>();
         }
 
-        public Generic.IDocumentCollection<T> Collection<T>(string name)
+        public IDocumentCollection<T> Collection<T>(string name)
         {
-            throw new NotImplementedException();
+            return provider.GetCollection<T>(name);
         }
 
         public IDocumentCollection CreateCollection(string name)
         {
-            throw new NotImplementedException();
-        }
-
-        public Generic.IDocumentCollection<T> CreateCollection<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Generic.IDocumentCollection<T> CreateCollection<T>(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteCollection<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteCollection(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        
-
-        private void LoadSettings()
-        {
-        }
-
-        private void GetProvider()
-        {
+            provider.CreateCollection(name, this.Settings.DefaultStorageFormat);
+            return provider.GetCollection(name);
         }
 
         public IDocumentCollection CreateCollection(string name, StorageFormat format)
         {
-            throw new NotImplementedException();
+            provider.CreateCollection(name, format);
+            return provider.GetCollection(name);
         }
 
-        public Generic.IDocumentCollection<T> CreateCollection<T>(StorageFormat format)
+        public IDocumentCollection<T> CreateCollection<T>()
         {
-            throw new NotImplementedException();
+            provider.CreateCollection<T>(this.Settings.DefaultStorageFormat);
+            return provider.GetCollection<T>();
+        }
+
+        public IDocumentCollection<T> CreateCollection<T>(StorageFormat format)
+        {
+            provider.CreateCollection<T>(format);
+            return provider.GetCollection<T>();
+        }
+
+        public IDocumentCollection<T> CreateCollection<T>(string name)
+        {
+            provider.CreateCollection(name, this.Settings.DefaultStorageFormat);
+            return provider.GetCollection<T>(name);
         }
 
         public IDocumentCollection<T> CreateCollection<T>(string name, StorageFormat format)
         {
-            throw new NotImplementedException();
+            provider.CreateCollection(name, format);
+            return provider.GetCollection<T>(name);
+        }
+
+        public void DeleteCollection<T>()
+        {
+            provider.DeleteCollection<T>();
+        }
+
+        public void DeleteCollection(string name)
+        {
+            provider.DeleteCollection(name);
         }
     }
 }

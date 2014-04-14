@@ -26,6 +26,11 @@ namespace SqlNoSql
     using System.Collections;
     using System.Collections.Generic;
     using System.Data;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Bson;
+    using System.IO;
+    using SqlNoSql.Data;
+    using System.Collections.ObjectModel;
 
     public class DocumentCollection : IDocumentCollection
     {
@@ -53,44 +58,188 @@ namespace SqlNoSql
             this.provider = provider;
         }
 
-        public dynamic Find(Guid key)
+        public dynamic Find(Guid id)
         {
-            throw new NotImplementedException();
+            if (this.Format == StorageFormat.BSON)
+            {
+                var record = provider.GetBsonRecord(id, this.Name);
+                if (record != null)
+                {
+                    return Serializer.DeserializeBson<dynamic>(record.BsonData);
+                }
+                return null;
+            }
+            else
+            {
+                var record = provider.GetJsonRecord(id, this.Name);
+                if (record != null)
+                {
+                    return Serializer.DeserializeJson<dynamic>(record.JsonData);
+                }
+                return null;
+            }
+        }
+
+        public KeyValuePair<Guid, dynamic>? FindWithKey(Func<dynamic, bool> filter)
+        {
+            if (this.Format == StorageFormat.BSON)
+            {
+                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                {
+                    var document = Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    if (filter != null)
+                    {
+                        if (filter(document))
+                            return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                    }
+                    else
+                    {
+                        return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                    }
+                }
+                return null;
+            }
+            else
+            {
+                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                {
+                    var document = Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    if (filter != null)
+                    {
+                        if (filter(document))
+                            return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                    }
+                    else
+                    {
+                        return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                    }
+                }
+                return null;
+            }
         }
 
         public dynamic Find(Func<dynamic, bool> filter)
         {
-            throw new NotImplementedException();
-        }
-
-        public KeyValuePair<Guid, dynamic> FindWithKey(Func<dynamic, bool> filter)
-        {
-            throw new NotImplementedException();
+            var keyValuePair = this.FindWithKey(filter);
+            if (keyValuePair.HasValue)
+                return keyValuePair.Value.Value;
+            else
+                return null;
         }
 
         public ICollection<dynamic> Filter(Func<dynamic, bool> filter)
         {
-            throw new NotImplementedException();
+            var result = new Collection<dynamic>();
+            if (this.Format == StorageFormat.BSON)
+            {
+                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                {
+                    var document = Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    if (filter != null)
+                    {
+                        if (filter(document))
+                            result.Add(document);
+                    }
+                    else
+                    {
+                        result.Add(document);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                {
+                    var document = Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    if (filter != null)
+                    {
+                        if (filter(document))
+                            result.Add(document);
+                    }
+                    else
+                    {
+                        result.Add(document);
+                    }
+                }
+            }
+            return result;
         }
 
-        public ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter)
+        public ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter = null)
         {
-            throw new NotImplementedException();
+            var result = new Collection<KeyValuePair<Guid, dynamic>();
+            if (this.Format == StorageFormat.BSON)
+            {
+                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                {
+                    var document = Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    if (filter != null)
+                    {
+                        if (filter(document))
+                            result.Add(new KeyValuePair<Guid, dynamic>(record.Id, document));
+                    }
+                    else
+                    {
+                        result.Add(new KeyValuePair<Guid, dynamic>(record.Id, document));
+                    }
+                }
+            }
+            else
+            {
+                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                {
+                    var document = Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    if (filter != null)
+                    {
+                        if (filter(document))
+                            result.Add(new KeyValuePair<Guid, dynamic>(record.Id, document));
+                    }
+                    else
+                    {
+                        result.Add(document);
+                    }
+                }
+            }
+            return result;
         }
 
-        public void AddOrUpdate(Guid key, dynamic item)
+        public void AddOrUpdate(Guid id, dynamic item)
         {
-            throw new NotImplementedException();
+            if (this.Format == StorageFormat.BSON)
+            {
+                var record = new BsonRecord { Id = id, BsonData = Serializer.SerializeBson<dynamic>(item) };
+                provider.AddOrUpdateRecord(record, this.Name);
+            }
+            else
+            {
+                var record = new JsonRecord { Id = id, JsonData = Serializer.SerializeJson<dynamic>(item) };
+                provider.AddOrUpdateRecord(record, this.Name);
+            }
         }
 
         public void Remove(Guid key)
         {
-            throw new NotImplementedException();
+            provider.RemoveRecord(id, this.Name);
         }
 
         public IEnumerator GetEnumerator()
         {
-            throw new NotImplementedException();
+            if (this.Format == StorageFormat.BSON)
+            {
+                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                {
+                    yield return new KeyValuePair<Guid, dynamic>(record.Id, Serializer.DeserializeBson<dynamic>(record.BsonData));
+                }
+                yield break;
+            }
+            else
+            {
+                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                {
+                    yield return new KeyValuePair<Guid, dynamic>(record.Id, Serializer.DeserializeJson<dynamic>(record.JsonData));
+                }
+                yield break;
+            }
         }
     }
 }

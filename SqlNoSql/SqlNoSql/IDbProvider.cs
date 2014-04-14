@@ -22,7 +22,10 @@
 
 namespace SqlNoSql
 {
+    using SqlNoSql.Data;
     using SqlNoSql.Generic;
+    using System;
+    using System.Collections.Generic;
     using System.Data;
 
     /// <summary>
@@ -36,20 +39,21 @@ namespace SqlNoSql
         /// Gets an unopened connection to the database.
         /// </summary>
         IDbConnection GetConnection();
-
-        /// <summary>
-        /// Checks if a table with the specified name exists in the database.
-        /// </summary>
-        bool TableExists(string name);
-
-        /// <summary>
-        /// Creates a table with the specified name in the database.
-        /// </summary>
-        void CreateTable(string name);
-
-        /// <summary>
-        /// Drops the table with the specified name from the database.
-        /// </summary>
-        void DeleteTable(string name);
+        bool CollectionExists(string name);
+        IDocumentCollection GetCollection(string name);
+        IDocumentCollection<T> GetCollection<T>();
+        IDocumentCollection<T> GetCollection<T>(string name);
+        bool CreateCollection(string name, StorageFormat format);
+        bool CreateCollection<T>(StorageFormat format);
+        bool DeleteCollection(string name);
+        bool DeleteCollection<T>();
+        IEnumerable<CollectionInfo> CollectionInfos();
+        JsonRecord GetJsonRecord(Guid id, string collectionName);
+        BsonRecord GetBsonRecord(Guid id, string collectionName);
+        IEnumerable<JsonRecord> EnumerateJsonCollection(string collectionName);
+        IEnumerable<BsonRecord> EnumerateBsonCollection(string collectionName);
+        bool AddOrUpdateRecord(BsonRecord record, string collectionName);
+        bool AddOrUpdateRecord(JsonRecord record, string collectionName);
+        bool RemoveRecord(Guid id, string collectionName);
     }
 }

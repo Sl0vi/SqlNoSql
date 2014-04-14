@@ -26,12 +26,15 @@ namespace SqlNoSql
     using System.Collections;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// A dynamic document collection that can be used to store any kind of document.
+    /// </summary>
     public interface IDocumentCollection : IEnumerable
     {
         /// <summary>
         /// Gets or sets the document with the specified id.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="id">The id of the document</param>
         dynamic this[Guid id] { get; set; }
 
         /// <summary>
@@ -47,7 +50,7 @@ namespace SqlNoSql
         /// <summary>
         /// Gets the document with the specified id.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="id">The id of the document</param>
         dynamic Find(Guid id);
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace SqlNoSql
         /// Iterates over the collection and returns the first document and its id that passes the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
-        KeyValuePair<Guid, dynamic> FindWithKey(Func<dynamic, bool> filter);
+        KeyValuePair<Guid, dynamic>? FindWithKey(Func<dynamic, bool> filter);
 
         /// <summary>
         /// Iterates over the collection and returns all documents that pass the filter.
@@ -77,14 +80,14 @@ namespace SqlNoSql
         /// <summary>
         /// Adds or updates a document in the collection
         /// </summary>
-        /// <param name="key">The key of the record</param>
+        /// <param name="id">The key of the record</param>
         /// <param name="item">The object that is being stored in the collection</param>
-        void AddOrUpdate(Guid key, dynamic item);
+        void AddOrUpdate(Guid id, dynamic item);
 
         /// <summary>
         /// Removes the document with the specified id from the collection
         /// </summary>
-        /// <param name="key">The key of the document</param>
+        /// <param name="id">The key of the document</param>
         void Remove(Guid id);
     }
 }

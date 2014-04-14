@@ -22,14 +22,13 @@
 
 namespace SqlNoSql.SqlClient
 {
+    using Dapper;
+    using SqlNoSql.Data;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Data;
     using System.Data.SqlClient;
-    using Dapper;
-    using SqlNoSql.Generic;
+    using System.Linq;
 
     public class SqlClientProvider : IDbProvider
     {
@@ -45,33 +44,82 @@ namespace SqlNoSql.SqlClient
             return new SqlConnection(connectionString);
         }
 
-        public bool TableExists(string name)
+        public bool CollectionExists(string name)
         {
-            using (var connection = this.GetConnection())
-            {
-                connection.Open();
-                return connection.Query<int>(
-                    "SELECT CAST(COUNT(*) AS INT) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name",
-                    new { Schema = "dbo", Name = name }).Single() > 0;
-            }
+            throw new NotImplementedException();
         }
 
-
-        public void CreateCollectionTable(string name)
+        public IDocumentCollection GetCollection(string name)
         {
-            using (var connection = this.GetConnection())
-            {
-                connection.Open();
-                connection.Execute(string.Format("CREATE TABLE {0}", name));
-            }
+            throw new NotImplementedException();
         }
 
-        public void DeleteTable(string name)
+        public Generic.IDocumentCollection<T> GetCollection<T>()
         {
+            throw new NotImplementedException();
         }
 
+        public Generic.IDocumentCollection<T> GetCollection<T>(string name)
+        {
+            throw new NotImplementedException();
+        }
 
-        public void CreateTable(string name)
+        public bool CreateCollection(string name, StorageFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CreateCollection<T>(StorageFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DeleteCollection(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DeleteCollection<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<CollectionInfo> CollectionInfos()
+        {
+            throw new NotImplementedException();
+        }
+
+        public JsonRecord GetJsonRecord(Guid id, string collectionName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BsonRecord GetBsonRecord(Guid id, string collectionName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<JsonRecord> EnumerateJsonCollection(string collectionName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<BsonRecord> EnumerateBsonCollection(string collectionName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddOrUpdateRecord(BsonRecord record, string collectionName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddOrUpdateRecord(JsonRecord record, string collectionName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveRecord(Guid id, string collectionName)
         {
             throw new NotImplementedException();
         }

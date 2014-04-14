@@ -31,15 +31,64 @@ namespace SqlNoSql.Generic
     /// <typeparam name="T">The type of objects contained in the collection</typeparam>
     public interface IDocumentCollection<T> : IEnumerable<T>
     {
+        /// <summary>
+        /// Gets or sets the document with the provided id.
+        /// </summary>
+        /// <param name="key">The id of the document</param>
+        /// <returns></returns>
         T this[Guid key] { get; set; }
+
+        /// <summary>
+        /// The name of the collection.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// The document format that data is saved in.
+        /// </summary>
         StorageFormat StorageFormat { get; }
-        T Find(Guid key);
+
+        /// <summary>
+        /// Gets the document with the provided id
+        /// </summary>
+        /// <param name="id">The id of the document</param>
+        T Find(Guid id);
+
+        /// <summary>
+        /// Iterates over the collection and returns the first document that passes the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         T Find(Func<T, bool> filter);
+
+        /// <summary>
+        /// Iterates over the collection and returns the first document and its id that passes the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         KeyValuePair<Guid, T> FindWithKey(Func<T, bool> filter);
+
+        /// <summary>
+        /// Iterates over the collection and returns all documents that pass the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         ICollection<T> Filter(Func<T, bool> filter);
+
+        /// <summary>
+        /// Iterates over the collection and returns all documents and their ids that pass the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         ICollection<KeyValuePair<Guid, T>> FilterWithKeys(Func<T, bool> filter);
-        void AddOrUpdate(Guid key, T item);
-        void Remove(Guid key);
+
+        /// <summary>
+        /// Adds or updates a document in the collection
+        /// </summary>
+        /// <param name="id">The key of the record</param>
+        /// <param name="item">The object that is being stored in the collection</param>
+        void AddOrUpdate(Guid id, T item);
+
+        /// <summary>
+        /// Removes the document with the specified id from the collection
+        /// </summary>
+        /// <param name="key">The key of the document</param>
+        void Remove(Guid id);
     }
 }
