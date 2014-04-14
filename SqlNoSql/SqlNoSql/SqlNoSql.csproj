@@ -50,7 +50,6 @@
     <Compile Include="Data\CollectionInfo.cs" />
     <Compile Include="Data\Serializer.cs" />
     <Compile Include="DbProviderFactory.cs" />
-    <Compile Include="DocumentEnumerator.cs" />
     <Compile Include="DocumentCollection.cs" />
     <Compile Include="DocumentStore.cs" />
     <Compile Include="DocumentStoreSettings.cs" />
