@@ -26,6 +26,9 @@ namespace SqlNoSql.Data
     using Newtonsoft.Json.Bson;
     using System.IO;
 
+    /// <summary>
+    /// Serializes and deserializes JSON and BSON documents
+    /// </summary>
     public static class Serializer
     {
         private static JsonSerializerSettings settings = new JsonSerializerSettings
@@ -34,16 +37,32 @@ namespace SqlNoSql.Data
             DateTimeZoneHandling = DateTimeZoneHandling.Unspecified
         };
 
+        /// <summary>
+        /// Serializes an object as a JSON document.
+        /// </summary>
+        /// <typeparam name="T">Type type to serialize</typeparam>
+        /// <param name="document">The object to serialize</param>
+        /// <returns></returns>
         public static string SerializeJson<T>(T document)
         {
             return JsonConvert.SerializeObject(document, Formatting.None, settings);
         }
 
+        /// <summary>
+        /// Deserializes a JSON document back to an object.
+        /// </summary>
+        /// <typeparam name="T">The object to deserialize to</typeparam>
+        /// <param name="json">The JSON document</param>
         public static T DeserializeJson<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json, settings);
         }
 
+        /// <summary>
+        /// Serializes an object to a BSON document.
+        /// </summary>
+        /// <typeparam name="T">The type to serialize</typeparam>
+        /// <param name="document">The object to serialize</param>
         public static byte[] SerializeBson<T>(T document)
         {
             var memoryStream = new MemoryStream();
@@ -53,6 +72,11 @@ namespace SqlNoSql.Data
             return memoryStream.ToArray();
         }
 
+        /// <summary>
+        /// Deserializes a BSON document back to an object.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize to</typeparam>
+        /// <param name="bson">The BSON document</param>
         public static T DeserializeBson<T>(byte[] bson)
         {
             var memoryStream = new MemoryStream(bson);

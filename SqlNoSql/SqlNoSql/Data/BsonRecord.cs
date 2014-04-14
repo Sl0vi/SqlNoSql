@@ -20,23 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SqlNoSql
+namespace SqlNoSql.Data
 {
     using System;
 
     /// <summary>
-    /// Represents a database record serialized as JSON
+    /// Represents a database record serialized as BSON
     /// </summary>
-    internal class JsonRecord
+    public class BsonRecord
     {
-        /// <summary>
-        /// The id of the record.
-        /// </summary>
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// The JSON serialized document.
-        /// </summary>
-        public string JsonData { get; set; }
+        public byte[] BsonData { get; set; }
     }
 }
