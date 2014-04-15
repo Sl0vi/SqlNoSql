@@ -46,7 +46,7 @@ namespace SqlNoSql.Generic
         /// <summary>
         /// The document format that data is saved in.
         /// </summary>
-        StorageFormat StorageFormat { get; }
+        StorageFormat Format { get; }
 
         /// <summary>
         /// Gets the document with the provided id

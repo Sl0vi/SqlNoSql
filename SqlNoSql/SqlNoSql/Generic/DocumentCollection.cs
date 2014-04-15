@@ -33,7 +33,7 @@ namespace SqlNoSql.Generic
 
         public string Name { get; private set; }
 
-        public StorageFormat StorageFormat { get; private set; }
+        public StorageFormat Format { get; private set; }
 
         public T this[Guid key]
         {
@@ -47,23 +47,23 @@ namespace SqlNoSql.Generic
             }
         }
 
-        public DocumentCollection(IDbProvider provider)
+        public DocumentCollection(IDbProvider provider, StorageFormat format)
         {
             this.Name = typeof(T).Name;
+            this.provider = provider;
+            this.Format = format;
         }
 
-        public DocumentCollection(string name, IDbProvider provider)
+        public DocumentCollection(string name, IDbProvider provider, StorageFormat format)
         {
             this.Name = name;
+            this.provider = provider;
+            this.Format = format;
         }
 
         public T Find(Guid key)
         {
-            using (var connection = provider.GetConnection())
-            {
-                connection.Open();
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
 
         public T Find(Func<T, bool> filter)

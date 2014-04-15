@@ -52,10 +52,11 @@ namespace SqlNoSql
             }
         }
 
-        public DocumentCollection(string name, IDbProvider provider)
+        public DocumentCollection(string name, IDbProvider provider, StorageFormat format)
         {
             this.Name = name;
             this.provider = provider;
+            this.Format = format;
         }
 
         public dynamic Find(Guid id)
@@ -167,7 +168,7 @@ namespace SqlNoSql
 
         public ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter = null)
         {
-            var result = new Collection<KeyValuePair<Guid, dynamic>();
+            var result = new Collection<KeyValuePair<Guid, dynamic>>();
             if (this.Format == StorageFormat.BSON)
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
@@ -217,7 +218,7 @@ namespace SqlNoSql
             }
         }
 
-        public void Remove(Guid key)
+        public void Remove(Guid id)
         {
             provider.RemoveRecord(id, this.Name);
         }
