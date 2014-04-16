@@ -109,37 +109,43 @@ namespace SqlNoSql
 
         public IDocumentCollection<dynamic> CreateCollection(string name)
         {
-            provider.CreateCollection(name, this.Settings.DefaultStorageFormat);
+            if (!provider.CreateCollection(name, this.Settings.DefaultStorageFormat))
+                throw new Exception(string.Format("Collection '{0}' could not be created", name));
             return provider.GetCollection<dynamic>(name);
         }
 
         public IDocumentCollection<dynamic> CreateCollection(string name, StorageFormat format)
         {
-            provider.CreateCollection(name, format);
+            if (!provider.CreateCollection(name, format))
+                throw new Exception(string.Format("Collection '{0}' could not be created", name));
             return provider.GetCollection<dynamic>(name);
         }
 
         public IDocumentCollection<T> CreateCollection<T>()
         {
-            provider.CreateCollection<T>(this.Settings.DefaultStorageFormat);
+            if (!provider.CreateCollection<T>(this.Settings.DefaultStorageFormat))
+                throw new Exception(string.Format("Collection '{0}' could not be created", typeof(T).Name));
             return provider.GetCollection<T>();
         }
 
         public IDocumentCollection<T> CreateCollection<T>(StorageFormat format)
         {
-            provider.CreateCollection<T>(format);
+            if (!provider.CreateCollection<T>(format))
+                throw new Exception(string.Format("Collection '{0}' could not be created", typeof(T).Name));
             return provider.GetCollection<T>();
         }
 
         public IDocumentCollection<T> CreateCollection<T>(string name)
         {
-            provider.CreateCollection(name, this.Settings.DefaultStorageFormat);
+            if (!provider.CreateCollection(name, this.Settings.DefaultStorageFormat))
+                throw new Exception(string.Format("Collection '{0}' could not be created", name));
             return provider.GetCollection<T>(name);
         }
 
         public IDocumentCollection<T> CreateCollection<T>(string name, StorageFormat format)
         {
-            provider.CreateCollection(name, format);
+            if (!provider.CreateCollection(name, format))
+                throw new Exception(string.Format("Collection '{0}' could not be created", name));
             return provider.GetCollection<T>(name);
         }
 
