@@ -33,10 +33,10 @@ namespace SqlNoSql
     {
         private IDbProvider provider;
 
-        public string Name { get; private set; }
-
-        public StorageFormat Format { get; private set; }
-
+        /// <summary>
+        /// Gets or sets the document with the provided id.
+        /// </summary>
+        /// <param name="id">The id of the document</param>
         public T this[Guid key]
         {
             get
@@ -48,6 +48,16 @@ namespace SqlNoSql
                 this.AddOrUpdate(key, value);
             }
         }
+
+        /// <summary>
+        /// The name of the collection.
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        /// The document format that data is saved in.
+        /// </summary>
+        public StorageFormat Format { get; private set; }
 
         public DocumentCollection(IDbProvider provider, StorageFormat format)
         {
@@ -63,6 +73,10 @@ namespace SqlNoSql
             this.Format = format;
         }
 
+        /// <summary>
+        /// Gets the document with the provided id
+        /// </summary>
+        /// <param name="id">The id of the document</param>
         public T Find(Guid id)
         {
             if (this.Format == StorageFormat.BSON)
@@ -85,6 +99,10 @@ namespace SqlNoSql
             }
         }
 
+        /// <summary>
+        /// Iterates over the collection and returns the first document that passes the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         public T Find(Func<T, bool> filter)
         {
             var keyValuePair = this.FindWithId(filter);
@@ -94,6 +112,10 @@ namespace SqlNoSql
                 return default(T);
         }
 
+        /// <summary>
+        /// Iterates over the collection and returns the first document and its id that passes the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         public KeyValuePair<Guid, T> FindWithId(Func<T, bool> filter)
         {
             if (this.Format == StorageFormat.BSON)
@@ -132,6 +154,10 @@ namespace SqlNoSql
             }
         }
 
+        /// <summary>
+        /// Iterates over the collection and returns all documents that pass the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         public ICollection<T> Filter(Func<T, bool> filter)
         {
             var result = new Collection<T>();
@@ -170,6 +196,10 @@ namespace SqlNoSql
             return result;
         }
 
+        /// <summary>
+        /// Iterates over the collection and returns all documents and their ids that pass the filter.
+        /// </summary>
+        /// <param name="filter">The filter action</param>
         public ICollection<KeyValuePair<Guid, T>> FilterWithIds(Func<T, bool> filter)
         {
             var result = new Collection<KeyValuePair<Guid, T>>();
@@ -208,6 +238,11 @@ namespace SqlNoSql
             return result;
         }
 
+        /// <summary>
+        /// Adds or updates a document in the collection
+        /// </summary>
+        /// <param name="id">The id of the document</param>
+        /// <param name="item">The object that is being stored in the collection</param>
         public void AddOrUpdate(Guid id, T item)
         {
             if (this.Format == StorageFormat.BSON)
@@ -222,11 +257,18 @@ namespace SqlNoSql
             }
         }
 
+        /// <summary>
+        /// Removes the document with the specified id from the collection
+        /// </summary>
+        /// <param name="id">The id of the document</param>
         public void Remove(Guid id)
         {
             provider.RemoveRecord(id, this.Name);
         }
 
+        /// <summary>
+        /// Gets the enumerator for this collection
+        /// </summary>
         public IEnumerator<KeyValuePair<Guid, T>> GetEnumerator()
         {
             if (this.Format == StorageFormat.BSON)
@@ -247,6 +289,9 @@ namespace SqlNoSql
             }
         }
 
+        /// <summary>
+        /// Gets the enumerator for this collection
+        /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator() as IEnumerator;

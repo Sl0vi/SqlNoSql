@@ -55,6 +55,10 @@ namespace SqlNoSql
             providers.Add(name, typeof(T));
         }
 
+        /// <summary>
+        /// Returns a new instance of a provider
+        /// </summary>
+        /// <typeparam name="T">Type of the provider</typeparam>
         public static T GetInstance<T>()
             where T : IDbProvider, new()
         {
@@ -62,6 +66,10 @@ namespace SqlNoSql
             return Activator.CreateInstance<T>();
         }
 
+        /// <summary>
+        /// Returns a new instance of a provider
+        /// </summary>
+        /// <param name="name">The name of the provider</param>
         public static IDbProvider GetInstance(string name)
         {
             var type = providers[name];
@@ -69,7 +77,7 @@ namespace SqlNoSql
         }
 
         /// <summary>
-        /// Loads all DbProviders in the application configuration file.
+        /// Loads all DbProviders specified in the application configuration file.
         /// </summary>
         private static void LoadFromConfig()
         {
