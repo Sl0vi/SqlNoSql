@@ -87,7 +87,7 @@ namespace SqlNoSql
         /// <summary>
         /// Removes the document with the specified id from the collection
         /// </summary>
-        /// <param name="key">The id of the document</param>
+        /// <param name="id">The id of the document</param>
         void Remove(Guid id);
     }
 }
