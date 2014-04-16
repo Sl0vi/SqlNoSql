@@ -32,16 +32,11 @@ namespace SqlNoSql
 
         public DocumentStoreSettings Settings { get; set; }
 
-        public DocumentStore()
-        {
-        }
-
-        public DocumentStore(string name)
-        {
-        }
-
         public DocumentStore(string connectionString, string providerName)
         {
+            this.Init();
+            var providerType = DbProviderFactory.GetType(providerName);
+            provider = (IDbProvider)Activator.CreateInstance(providerType, new[] { connectionString });
         }
 
         private void Init()

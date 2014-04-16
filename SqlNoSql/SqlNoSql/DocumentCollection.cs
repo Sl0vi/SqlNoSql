@@ -84,7 +84,7 @@ namespace SqlNoSql
                 var record = provider.GetBsonRecord(id, this.Name);
                 if (record != null)
                 {
-                    return Serializer.DeserializeBson<T>(record.BsonData);
+                    return Serializer.DeserializeBson<T>(record.Data);
                 }
                 return default(T);
             }
@@ -93,7 +93,7 @@ namespace SqlNoSql
                 var record = provider.GetJsonRecord(id, this.Name);
                 if (record != null)
                 {
-                    return Serializer.DeserializeJson<T>(record.JsonData);
+                    return Serializer.DeserializeJson<T>(record.Data);
                 }
                 return default(T);
             }
@@ -122,7 +122,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    var document = Serializer.DeserializeBson<dynamic>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -139,7 +139,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    var document = Serializer.DeserializeJson<dynamic>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -165,7 +165,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeBson<T>(record.BsonData);
+                    var document = Serializer.DeserializeBson<T>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -181,7 +181,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeJson<T>(record.JsonData);
+                    var document = Serializer.DeserializeJson<T>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -207,7 +207,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeBson<T>(record.BsonData);
+                    var document = Serializer.DeserializeBson<T>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -223,7 +223,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeJson<T>(record.JsonData);
+                    var document = Serializer.DeserializeJson<T>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -247,12 +247,12 @@ namespace SqlNoSql
         {
             if (this.Format == StorageFormat.BSON)
             {
-                var record = new BsonRecord { Id = id, BsonData = Serializer.SerializeBson<T>(item) };
+                var record = new BsonRecord { Id = id, Data = Serializer.SerializeBson<T>(item) };
                 provider.AddOrUpdateRecord(record, this.Name);
             }
             else
             {
-                var record = new JsonRecord { Id = id, JsonData = Serializer.SerializeJson<T>(item) };
+                var record = new JsonRecord { Id = id, Data = Serializer.SerializeJson<T>(item) };
                 provider.AddOrUpdateRecord(record, this.Name);
             }
         }
@@ -275,7 +275,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeBson<T>(record.BsonData));
+                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeBson<T>(record.Data));
                 }
                 yield break;
             }
@@ -283,7 +283,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeJson<T>(record.JsonData));
+                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeJson<T>(record.Data));
                 }
                 yield break;
             }

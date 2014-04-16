@@ -25,6 +25,7 @@ namespace SqlNoSql
     using SqlNoSql.SqlClient;
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
 
     public static class DbProviderFactory
     {
@@ -55,26 +56,31 @@ namespace SqlNoSql
             providers.Add(name, typeof(T));
         }
 
-        /// <summary>
-        /// Returns a new instance of a provider
-        /// </summary>
-        /// <typeparam name="T">Type of the provider</typeparam>
-        public static T GetInstance<T>()
-            where T : IDbProvider, new()
+        public static Type GetType(string name)
         {
-            var type = providers[typeof(T).FullName];
-            return Activator.CreateInstance<T>();
+            return providers[name];
         }
 
         /// <summary>
         /// Returns a new instance of a provider
         /// </summary>
+        /// <typeparam name="T">Type of the provider</typeparam>
+        //public static T GetInstance<T>()
+        //    where T : IDbProvider, new()
+        //{
+        //    var type = providers[typeof(T).FullName];
+        //    return Activator.CreateInstance<T>();
+        //}
+
+        /// <summary>
+        /// Returns a new instance of a provider
+        /// </summary>
         /// <param name="name">The name of the provider</param>
-        public static IDbProvider GetInstance(string name)
-        {
-            var type = providers[name];
-            return (IDbProvider)Activator.CreateInstance(type);
-        }
+        //public static IDbProvider GetInstance(string name)
+        //{
+        //    var type = providers[name];
+        //    return (IDbProvider)Activator.CreateInstance(type);
+        //}
 
         /// <summary>
         /// Loads all DbProviders specified in the application configuration file.

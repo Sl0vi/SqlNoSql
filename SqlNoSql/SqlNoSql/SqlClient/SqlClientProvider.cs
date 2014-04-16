@@ -33,10 +33,12 @@ namespace SqlNoSql.SqlClient
     public class SqlClientProvider : IDbProvider
     {
         private string connectionString;
+        private IEnumerable<string> reservedNames = new[] { "_collections" };
 
         public SqlClientProvider(string connectionString)
         {
             this.connectionString = connectionString;
+            this.CreateCollectionInfoTableIfNotExists();
         }
 
         public IDbConnection GetConnection()
@@ -46,77 +48,221 @@ namespace SqlNoSql.SqlClient
 
         public bool CollectionExists(string name)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Query<int>("SELECT CAST(COUNT(*) AS INT) FROM _collections WHERE Name = @Name", new { Name = name }).Single() > 0;
+            }
         }
 
         public IDocumentCollection<T> GetCollection<T>()
         {
-            throw new NotImplementedException();
+            return this.GetCollection<T>(typeof(T).Name);
         }
 
         public IDocumentCollection<T> GetCollection<T>(string name)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                var collectionInfo = connection.Query<CollectionInfo>(
+                    "SELECT Name, Format FROM _collections WHERE Name = @Name",
+                    new { Name = typeof(T).Name }).SingleOrDefault();
+                if (collectionInfo != null)
+                    return new DocumentCollection<T>(collectionInfo.Name, this, collectionInfo.Format);
+                else
+                    return null;
+            }
         }
 
         public bool CreateCollection(string name, StorageFormat format)
         {
-            throw new NotImplementedException();
+            if (reservedNames.Any(x => x.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                throw new ArgumentException(
+                    string.Format("{0} cannot be used, since it is a reserved name", name),
+                    name);
+            }
+            if (this.CollectionExists(name))
+            {
+                throw new ArgumentException(
+                    string.Format("A collection named {0} already exists", name),
+                    name);
+            }
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction(IsolationLevel.Serializable))
+                {
+                    try
+                    {
+                        if (format == StorageFormat.BSON)
+                            this.CreateBsonTable(name, connection);
+                        else
+                            this.CreateJsonTable(name, connection);
+                        connection.Execute("INSERT INTO _collections (Name, Format) VALUES (@Name, @Format)", new { Name = name, Format = format });
+                        transaction.Commit();
+                        return true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+            }
         }
 
         public bool CreateCollection<T>(StorageFormat format)
         {
-            throw new NotImplementedException();
+            return this.CreateCollection(typeof(T).Name, format);
         }
 
         public bool DeleteCollection(string name)
         {
-            throw new NotImplementedException();
+            if (!this.CollectionExists(name))
+                return true;
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction(IsolationLevel.Serializable))
+                {
+                    try
+                    {
+                        connection.Execute(string.Format("DROP TABLE {0}", name));
+                        connection.Execute("DELETE FROM _collections WHERE Name = @Name", new { Name = name });
+                        transaction.Commit();
+                        return true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+            }
         }
 
         public bool DeleteCollection<T>()
         {
-            throw new NotImplementedException();
+            return this.DeleteCollection(typeof(T).Name);
         }
 
         public IEnumerable<CollectionInfo> CollectionInfos()
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Query<CollectionInfo>("SELECT Name, Format FROM _collections");
+            }
         }
 
         public JsonRecord GetJsonRecord(Guid id, string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Query<JsonRecord>(
+                    string.Format("SELECT Id, Data FROM {0} WHERE Id = @Id", collectionName),
+                    new { Id = id }).SingleOrDefault();
+            }
         }
 
         public BsonRecord GetBsonRecord(Guid id, string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Query<BsonRecord>(
+                    string.Format("SELECT Id, Data FROM {0} WHERE Id = @Id", collectionName),
+                    new { Id = id }).SingleOrDefault();
+            }
         }
 
         public IEnumerable<JsonRecord> EnumerateJsonCollection(string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Query<JsonRecord>(
+                    string.Format("SELECT Id, Data FROM {0}", collectionName),
+                    buffered: false);
+            }
         }
 
         public IEnumerable<BsonRecord> EnumerateBsonCollection(string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Query<BsonRecord>(
+                    string.Format("SELECT Id, Data FROM {0}", collectionName),
+                    buffered: false);
+            }
         }
 
         public bool AddOrUpdateRecord(BsonRecord record, string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Execute(
+                    string.Format("INSERT INTO {0} (Id, Data) VALUES (@Id, @Data)", collectionName),
+                    record) > 0;
+            }
         }
 
         public bool AddOrUpdateRecord(JsonRecord record, string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Execute(
+                    string.Format("INSERT INTO {0} (Id, Data) VALUES (@Id, @Data)", collectionName),
+                    record) > 0;
+            }
         }
 
         public bool RemoveRecord(Guid id, string collectionName)
         {
-            throw new NotImplementedException();
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                return connection.Execute(
+                    string.Format("DELETE FROM {0} WHERE Id = @Id", collectionName),
+                    new { Id = id }) > 0;
+            }
+        }
+
+        private void CreateJsonTable(string name, SqlConnection connection)
+        {
+            connection.Execute(string.Format(
+                "CREATE TABLE {0} ( " +
+                "Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL, " +
+                "Data NVARCHAR(MAX) NOT NULL)", name));
+        }
+
+        private void CreateBsonTable(string name, SqlConnection connection)
+        {
+            connection.Execute(string.Format(
+                "CREATE TABLE {0} ( " +
+                "Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL, " +
+                "Data VARBINARY(MAX) NOT NULL)", name));
+        }
+
+        private void CreateCollectionInfoTableIfNotExists()
+        {
+            using (var connection = this.GetConnection() as SqlConnection)
+            {
+                connection.Open();
+                connection.Execute(
+                    "IF (OBJECT_ID('_collections', 'U') IS NULL) " +
+                    "BEGIN " +
+                    "CREATE TABLE _collections ( " +
+                    "Name NVARCHAR(450) PRIMARY KEY NOT NULL, " +
+                    "Format NVARCHAR(MAX) NOT NULL) " +
+                    "END");
+            }
         }
     }
 }

@@ -37,6 +37,6 @@ namespace SqlNoSql.Data
         /// <summary>
         /// The JSON serialized document.
         /// </summary>
-        public string JsonData { get; set; }
+        public string Data { get; set; }
     }
 }

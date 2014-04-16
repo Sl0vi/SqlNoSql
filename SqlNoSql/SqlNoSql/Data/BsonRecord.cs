@@ -30,6 +30,6 @@ namespace SqlNoSql.Data
     public class BsonRecord
     {
         public Guid Id { get; set; }
-        public byte[] BsonData { get; set; }
+        public byte[] Data { get; set; }
     }
 }
