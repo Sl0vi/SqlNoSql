@@ -25,6 +25,8 @@ namespace SqlNoSql
     using System;
     using System.Reflection;
     using System.Configuration;
+    using System.Collections.Generic;
+    using SqlNoSql.Data;
 
     public class DocumentStore : IDocumentStore
     {
@@ -32,6 +34,37 @@ namespace SqlNoSql
 
         public DocumentStoreSettings Settings { get; set; }
 
+        /// <summary>
+        /// Creates a new DocumentStore instance
+        /// </summary>
+        /// <param name="name">The name of the connection string in the configuration file</param>
+        public DocumentStore(string name)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings[name];
+            if (connectionString == null)
+            {
+                throw new ArgumentException(
+                    string.Format("No connection string named {0} was found in the configuration file", name),
+                    name);
+            }
+            if (string.IsNullOrEmpty(connectionString.ProviderName))
+            {
+                throw new ConfigurationErrorsException("providerName must be set on the connection string in order to use this constructor");
+            }
+            var providerType = DbProviderFactory.GetType(connectionString.ProviderName);
+            if (providerType == null)
+            {
+                throw new ConfigurationErrorsException(string.Format("{0} is not a supported provider", connectionString.ProviderName));
+            }
+            provider = (IDbProvider)Activator.CreateInstance(providerType, new[] { connectionString.ConnectionString });
+            this.Init();
+        }
+
+        /// <summary>
+        /// Creates a new DocumentStore instance
+        /// </summary>
+        /// <param name="connectionString">The connection string to the database</param>
+        /// <param name="providerName">The name of the db provider</param>
         public DocumentStore(string connectionString, string providerName)
         {
             this.Init();
@@ -42,6 +75,21 @@ namespace SqlNoSql
         private void Init()
         {
             this.Settings = new DocumentStoreSettings();
+        }
+
+        public bool CollectionExists(string name)
+        {
+            return provider.CollectionExists(name);
+        }
+
+        public bool CollectionExists<T>()
+        {
+            return provider.CollectionExists(typeof(T).Name);
+        }
+
+        public IEnumerable<CollectionInfo> CollectionInfos()
+        {
+            return provider.CollectionInfos();
         }
 
         public IDocumentCollection<dynamic> Collection(string name)

@@ -22,6 +22,8 @@
 
 namespace SqlNoSql
 {
+    using SqlNoSql.Data;
+    using System.Collections.Generic;
     using System.Data;
 
     /// <summary>
@@ -29,6 +31,23 @@ namespace SqlNoSql
     /// </summary>
     public interface IDocumentStore
     {
+        /// <summary>
+        /// Checks if a collection exists in the document store.
+        /// </summary>
+        /// <param name="name">The name of the collection to check for</param>
+        bool CollectionExists(string name);
+
+        /// <summary>
+        /// Checks if a collection with the same name as the passed in type exists in the document store.
+        /// </summary>
+        /// <typeparam name="T">The type to check for</typeparam>
+        bool CollectionExists<T>();
+
+        /// <summary>
+        /// Gets information about all collections in the document store.
+        /// </summary>
+        IEnumerable<CollectionInfo> CollectionInfos();
+
         /// <summary>
         /// Gets a dynamic document collection by its name.
         /// </summary>
