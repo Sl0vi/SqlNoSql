@@ -25,7 +25,6 @@ namespace SqlNoSql
     using System;
     using System.Reflection;
     using System.Configuration;
-    using SqlNoSql.Generic;
 
     public class DocumentStore : IDocumentStore
     {
@@ -50,9 +49,9 @@ namespace SqlNoSql
             this.Settings = new DocumentStoreSettings();
         }
 
-        public IDocumentCollection Collection(string name)
+        public IDocumentCollection<dynamic> Collection(string name)
         {
-            return provider.GetCollection(name);
+            return provider.GetCollection<dynamic>(name);
         }
 
         public IDocumentCollection<T> Collection<T>()
@@ -65,16 +64,16 @@ namespace SqlNoSql
             return provider.GetCollection<T>(name);
         }
 
-        public IDocumentCollection CreateCollection(string name)
+        public IDocumentCollection<dynamic> CreateCollection(string name)
         {
             provider.CreateCollection(name, this.Settings.DefaultStorageFormat);
-            return provider.GetCollection(name);
+            return provider.GetCollection<dynamic>(name);
         }
 
-        public IDocumentCollection CreateCollection(string name, StorageFormat format)
+        public IDocumentCollection<dynamic> CreateCollection(string name, StorageFormat format)
         {
             provider.CreateCollection(name, format);
-            return provider.GetCollection(name);
+            return provider.GetCollection<dynamic>(name);
         }
 
         public IDocumentCollection<T> CreateCollection<T>()

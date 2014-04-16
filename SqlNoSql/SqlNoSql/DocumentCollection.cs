@@ -20,27 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+
 namespace SqlNoSql
 {
+    using SqlNoSql.Data;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Data;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Bson;
-    using System.IO;
-    using SqlNoSql.Data;
     using System.Collections.ObjectModel;
 
-    public class DocumentCollection : IDocumentCollection
+    public class DocumentCollection<T> : IDocumentCollection<T>
     {
-        private IDbProvider provider { get; set; }
+        private IDbProvider provider;
 
         public string Name { get; private set; }
 
         public StorageFormat Format { get; private set; }
 
-        public dynamic this[Guid key]
+        public T this[Guid key]
         {
             get
             {
@@ -52,6 +49,13 @@ namespace SqlNoSql
             }
         }
 
+        public DocumentCollection(IDbProvider provider, StorageFormat format)
+        {
+            this.Name = typeof(T).Name;
+            this.provider = provider;
+            this.Format = format;
+        }
+
         public DocumentCollection(string name, IDbProvider provider, StorageFormat format)
         {
             this.Name = name;
@@ -59,29 +63,38 @@ namespace SqlNoSql
             this.Format = format;
         }
 
-        public dynamic Find(Guid id)
+        public T Find(Guid id)
         {
             if (this.Format == StorageFormat.BSON)
             {
                 var record = provider.GetBsonRecord(id, this.Name);
                 if (record != null)
                 {
-                    return Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    return Serializer.DeserializeBson<T>(record.BsonData);
                 }
-                return null;
+                return default(T);
             }
             else
             {
                 var record = provider.GetJsonRecord(id, this.Name);
                 if (record != null)
                 {
-                    return Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    return Serializer.DeserializeJson<T>(record.JsonData);
                 }
-                return null;
+                return default(T);
             }
         }
 
-        public KeyValuePair<Guid, dynamic>? FindWithKey(Func<dynamic, bool> filter)
+        public T Find(Func<T, bool> filter)
+        {
+            var keyValuePair = this.FindWithId(filter);
+            if (keyValuePair.Key != Guid.Empty)
+                return keyValuePair.Value;
+            else
+                return default(T);
+        }
+
+        public KeyValuePair<Guid, T> FindWithId(Func<T, bool> filter)
         {
             if (this.Format == StorageFormat.BSON)
             {
@@ -91,14 +104,14 @@ namespace SqlNoSql
                     if (filter != null)
                     {
                         if (filter(document))
-                            return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                            return new KeyValuePair<Guid, T>(record.Id, document);
                     }
                     else
                     {
-                        return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                        return new KeyValuePair<Guid, T>(record.Id, document);
                     }
                 }
-                return null;
+                return new KeyValuePair<Guid,T>(Guid.Empty, default(T));
             }
             else
             {
@@ -108,34 +121,25 @@ namespace SqlNoSql
                     if (filter != null)
                     {
                         if (filter(document))
-                            return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                            return new KeyValuePair<Guid, T>(record.Id, document);
                     }
                     else
                     {
-                        return new KeyValuePair<Guid, dynamic>(record.Id, document);
+                        return new KeyValuePair<Guid, T>(record.Id, document);
                     }
                 }
-                return null;
+                return new KeyValuePair<Guid, T>(Guid.Empty, default(T));
             }
         }
 
-        public dynamic Find(Func<dynamic, bool> filter)
+        public ICollection<T> Filter(Func<T, bool> filter)
         {
-            var keyValuePair = this.FindWithKey(filter);
-            if (keyValuePair.HasValue)
-                return keyValuePair.Value.Value;
-            else
-                return null;
-        }
-
-        public ICollection<dynamic> Filter(Func<dynamic, bool> filter)
-        {
-            var result = new Collection<dynamic>();
+            var result = new Collection<T>();
             if (this.Format == StorageFormat.BSON)
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    var document = Serializer.DeserializeBson<T>(record.BsonData);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -151,7 +155,7 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    var document = Serializer.DeserializeJson<T>(record.JsonData);
                     if (filter != null)
                     {
                         if (filter(document))
@@ -166,22 +170,22 @@ namespace SqlNoSql
             return result;
         }
 
-        public ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter = null)
+        public ICollection<KeyValuePair<Guid, T>> FilterWithIds(Func<T, bool> filter)
         {
-            var result = new Collection<KeyValuePair<Guid, dynamic>>();
+            var result = new Collection<KeyValuePair<Guid, T>>();
             if (this.Format == StorageFormat.BSON)
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeBson<dynamic>(record.BsonData);
+                    var document = Serializer.DeserializeBson<T>(record.BsonData);
                     if (filter != null)
                     {
                         if (filter(document))
-                            result.Add(new KeyValuePair<Guid, dynamic>(record.Id, document));
+                            result.Add(new KeyValuePair<Guid, T>(record.Id, document));
                     }
                     else
                     {
-                        result.Add(new KeyValuePair<Guid, dynamic>(record.Id, document));
+                        result.Add(new KeyValuePair<Guid, T>(record.Id, document));
                     }
                 }
             }
@@ -189,31 +193,31 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    var document = Serializer.DeserializeJson<dynamic>(record.JsonData);
+                    var document = Serializer.DeserializeJson<T>(record.JsonData);
                     if (filter != null)
                     {
                         if (filter(document))
-                            result.Add(new KeyValuePair<Guid, dynamic>(record.Id, document));
+                            result.Add(new KeyValuePair<Guid, T>(record.Id, document));
                     }
                     else
                     {
-                        result.Add(document);
+                        result.Add(new KeyValuePair<Guid, T>(record.Id, document));
                     }
                 }
             }
             return result;
         }
 
-        public void AddOrUpdate(Guid id, dynamic item)
+        public void AddOrUpdate(Guid id, T item)
         {
             if (this.Format == StorageFormat.BSON)
             {
-                var record = new BsonRecord { Id = id, BsonData = Serializer.SerializeBson<dynamic>(item) };
+                var record = new BsonRecord { Id = id, BsonData = Serializer.SerializeBson<T>(item) };
                 provider.AddOrUpdateRecord(record, this.Name);
             }
             else
             {
-                var record = new JsonRecord { Id = id, JsonData = Serializer.SerializeJson<dynamic>(item) };
+                var record = new JsonRecord { Id = id, JsonData = Serializer.SerializeJson<T>(item) };
                 provider.AddOrUpdateRecord(record, this.Name);
             }
         }
@@ -223,13 +227,13 @@ namespace SqlNoSql
             provider.RemoveRecord(id, this.Name);
         }
 
-        public IEnumerator GetEnumerator()
+        public IEnumerator<KeyValuePair<Guid, T>> GetEnumerator()
         {
             if (this.Format == StorageFormat.BSON)
             {
                 foreach (var record in provider.EnumerateBsonCollection(this.Name))
                 {
-                    yield return new KeyValuePair<Guid, dynamic>(record.Id, Serializer.DeserializeBson<dynamic>(record.BsonData));
+                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeBson<T>(record.BsonData));
                 }
                 yield break;
             }
@@ -237,10 +241,15 @@ namespace SqlNoSql
             {
                 foreach (var record in provider.EnumerateJsonCollection(this.Name))
                 {
-                    yield return new KeyValuePair<Guid, dynamic>(record.Id, Serializer.DeserializeJson<dynamic>(record.JsonData));
+                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeJson<T>(record.JsonData));
                 }
                 yield break;
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator() as IEnumerator;
         }
     }
 }

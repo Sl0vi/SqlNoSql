@@ -51,13 +51,11 @@
     <Compile Include="Data\Serializer.cs" />
     <Compile Include="DbProviderFactory.cs" />
     <Compile Include="DocumentEnumerator.cs" />
-    <Compile Include="DocumentCollection.cs" />
     <Compile Include="DocumentStore.cs" />
     <Compile Include="DocumentStoreSettings.cs" />
-    <Compile Include="Generic\DocumentCollection.cs" />
+    <Compile Include="DocumentCollection.cs" />
     <Compile Include="IDbProvider.cs" />
     <Compile Include="IDocumentStore.cs" />
-    <Compile Include="Generic\IDocumentCollection.cs" />
     <Compile Include="IDocumentCollection.cs" />
     <Compile Include="Data\JsonRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

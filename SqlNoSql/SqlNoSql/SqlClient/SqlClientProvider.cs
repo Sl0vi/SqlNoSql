@@ -49,17 +49,12 @@ namespace SqlNoSql.SqlClient
             throw new NotImplementedException();
         }
 
-        public IDocumentCollection GetCollection(string name)
+        public IDocumentCollection<T> GetCollection<T>()
         {
             throw new NotImplementedException();
         }
 
-        public Generic.IDocumentCollection<T> GetCollection<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Generic.IDocumentCollection<T> GetCollection<T>(string name)
+        public IDocumentCollection<T> GetCollection<T>(string name)
         {
             throw new NotImplementedException();
         }

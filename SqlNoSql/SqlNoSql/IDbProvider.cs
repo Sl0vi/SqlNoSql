@@ -23,7 +23,6 @@
 namespace SqlNoSql
 {
     using SqlNoSql.Data;
-    using SqlNoSql.Generic;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -40,7 +39,6 @@ namespace SqlNoSql
         /// </summary>
         IDbConnection GetConnection();
         bool CollectionExists(string name);
-        IDocumentCollection GetCollection(string name);
         IDocumentCollection<T> GetCollection<T>();
         IDocumentCollection<T> GetCollection<T>(string name);
         bool CreateCollection(string name, StorageFormat format);

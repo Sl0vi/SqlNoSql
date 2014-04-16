@@ -23,71 +23,71 @@
 namespace SqlNoSql
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
 
     /// <summary>
-    /// A dynamic document collection that can be used to store any kind of document.
+    /// A collection of BSON or JSON documents that can be deserialized to the specified type.
     /// </summary>
-    public interface IDocumentCollection : IEnumerable
+    /// <typeparam name="T">The type of objects contained in the collection</typeparam>
+    public interface IDocumentCollection<T> : IEnumerable<KeyValuePair<Guid, T>>
     {
         /// <summary>
-        /// Gets or sets the document with the specified id.
+        /// Gets or sets the document with the provided id.
         /// </summary>
         /// <param name="id">The id of the document</param>
-        dynamic this[Guid id] { get; set; }
+        T this[Guid id] { get; set; }
 
         /// <summary>
-        /// Gets the name of the collection.
+        /// The name of the collection.
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        /// Gets the document format used for storing objects in the collection.
+        /// The document format that data is saved in.
         /// </summary>
         StorageFormat Format { get; }
 
         /// <summary>
-        /// Gets the document with the specified id.
+        /// Gets the document with the provided id
         /// </summary>
         /// <param name="id">The id of the document</param>
-        dynamic Find(Guid id);
+        T Find(Guid id);
 
         /// <summary>
         /// Iterates over the collection and returns the first document that passes the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
-        dynamic Find(Func<dynamic, bool> filter);
+        T Find(Func<T, bool> filter);
 
         /// <summary>
         /// Iterates over the collection and returns the first document and its id that passes the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
-        KeyValuePair<Guid, dynamic>? FindWithKey(Func<dynamic, bool> filter);
+        KeyValuePair<Guid, T> FindWithId(Func<T, bool> filter);
 
         /// <summary>
         /// Iterates over the collection and returns all documents that pass the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
-        ICollection<dynamic> Filter(Func<dynamic, bool> filter);
+        ICollection<T> Filter(Func<T, bool> filter);
 
         /// <summary>
         /// Iterates over the collection and returns all documents and their ids that pass the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
-        ICollection<KeyValuePair<Guid, dynamic>> FilterWithKeys(Func<dynamic, bool> filter);
+        ICollection<KeyValuePair<Guid, T>> FilterWithIds(Func<T, bool> filter);
 
         /// <summary>
         /// Adds or updates a document in the collection
         /// </summary>
-        /// <param name="id">The key of the record</param>
+        /// <param name="id">The id of the document</param>
         /// <param name="item">The object that is being stored in the collection</param>
-        void AddOrUpdate(Guid id, dynamic item);
+        void AddOrUpdate(Guid id, T item);
 
         /// <summary>
         /// Removes the document with the specified id from the collection
         /// </summary>
-        /// <param name="id">The key of the document</param>
+        /// <param name="key">The id of the document</param>
         void Remove(Guid id);
     }
 }

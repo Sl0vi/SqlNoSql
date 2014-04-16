@@ -23,7 +23,6 @@
 namespace SqlNoSql
 {
     using System.Data;
-    using SqlNoSql.Generic;
 
     /// <summary>
     /// The document store represents the database used for storing JSON or BSON documents.
@@ -34,7 +33,7 @@ namespace SqlNoSql
         /// Gets a dynamic document collection by its name.
         /// </summary>
         /// <param name="name">The name of the collection</param>
-        IDocumentCollection Collection(string name);
+        IDocumentCollection<dynamic> Collection(string name);
 
         /// <summary>
         /// Gets a document collection for the specified type. The name of the collection is assumed to
@@ -54,14 +53,14 @@ namespace SqlNoSql
         /// Creates a new dynamic collection and returns an instance of it.
         /// </summary>
         /// <param name="name">The name of the collection to create</param>
-        IDocumentCollection CreateCollection(string name);
+        IDocumentCollection<dynamic> CreateCollection(string name);
 
         /// <summary>
         /// Creates a new dynamic collection and returns an instance of it.
         /// </summary>
         /// <param name="name">The name of the collection to create</param>
         /// <param name="format">The document format that is used for storing objects in the database</param>
-        IDocumentCollection CreateCollection(string name, StorageFormat format);
+        IDocumentCollection<dynamic> CreateCollection(string name, StorageFormat format);
 
         /// <summary>
         /// Creates a new collection for the specified type. The name of the collection that is
