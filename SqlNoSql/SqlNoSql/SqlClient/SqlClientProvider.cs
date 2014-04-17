@@ -80,13 +80,13 @@ namespace SqlNoSql.SqlClient
             if (reservedNames.Any(x => x.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
             {
                 throw new ArgumentException(
-                    string.Format("{0} cannot be used, since it is a reserved name", name),
+                    string.Format("'{0}' cannot be used, since it is a reserved name", name),
                     name);
             }
             if (this.CollectionExists(name))
             {
                 throw new ArgumentException(
-                    string.Format("A collection named {0} already exists", name),
+                    string.Format("A collection named '{0}' already exists", name),
                     name);
             }
             using (var connection = this.GetConnection() as SqlConnection)
@@ -101,7 +101,7 @@ namespace SqlNoSql.SqlClient
                         else
                             this.CreateJsonTable(name, connection, transaction);
                         connection.Execute("INSERT INTO _collections (Name, Format) VALUES (@Name, @Format)", 
-                            new { Name = name, Format = format },
+                            new { Name = name, Format = format.ToString() },
                             transaction: transaction);
                         transaction.Commit();
                         return true;
@@ -131,7 +131,7 @@ namespace SqlNoSql.SqlClient
                 {
                     try
                     {
-                        connection.Execute(string.Format("DROP TABLE {0}", name), transaction: transaction);
+                        connection.Execute(string.Format("DROP TABLE [{0}]", name), transaction: transaction);
                         connection.Execute("DELETE FROM _collections WHERE Name = @Name", 
                             new { Name = name },
                             transaction: transaction);
@@ -167,7 +167,7 @@ namespace SqlNoSql.SqlClient
             {
                 connection.Open();
                 return connection.Query<JsonRecord>(
-                    string.Format("SELECT Id, Data FROM {0} WHERE Id = @Id", collectionName),
+                    string.Format("SELECT Id, Data FROM [{0}] WHERE Id = @Id", collectionName),
                     new { Id = id }).SingleOrDefault();
             }
         }
@@ -178,7 +178,7 @@ namespace SqlNoSql.SqlClient
             {
                 connection.Open();
                 return connection.Query<BsonRecord>(
-                    string.Format("SELECT Id, Data FROM {0} WHERE Id = @Id", collectionName),
+                    string.Format("SELECT Id, Data FROM [{0}] WHERE Id = @Id", collectionName),
                     new { Id = id }).SingleOrDefault();
             }
         }
@@ -188,10 +188,14 @@ namespace SqlNoSql.SqlClient
             using (var connection = this.GetConnection() as SqlConnection)
             {
                 connection.Open();
-                return connection.Query<JsonRecord>(
-                    string.Format("SELECT Id, Data FROM {0}", collectionName),
-                    buffered: false);
+                foreach (var record in connection.Query<JsonRecord>(
+                    string.Format("SELECT Id, Data FROM [{0}]", collectionName),
+                    buffered: false))
+                {
+                    yield return record;
+                }
             }
+            yield break;
         }
 
         public IEnumerable<BsonRecord> EnumerateBsonCollection(string collectionName)
@@ -199,10 +203,14 @@ namespace SqlNoSql.SqlClient
             using (var connection = this.GetConnection() as SqlConnection)
             {
                 connection.Open();
-                return connection.Query<BsonRecord>(
-                    string.Format("SELECT Id, Data FROM {0}", collectionName),
-                    buffered: false);
+                foreach (var record in connection.Query<BsonRecord>(
+                    string.Format("SELECT Id, Data FROM [{0}]", collectionName),
+                    buffered: false))
+                {
+                    yield return record;
+                }
             }
+            yield break;
         }
 
         public bool AddOrUpdateRecord(BsonRecord record, string collectionName)
@@ -211,7 +219,7 @@ namespace SqlNoSql.SqlClient
             {
                 connection.Open();
                 return connection.Execute(
-                    string.Format("INSERT INTO {0} (Id, Data) VALUES (@Id, @Data)", collectionName),
+                    string.Format("INSERT INTO [{0}] (Id, Data) VALUES (@Id, @Data)", collectionName),
                     record) > 0;
             }
         }
@@ -221,16 +229,16 @@ namespace SqlNoSql.SqlClient
             using (var connection = this.GetConnection() as SqlConnection)
             {
                 connection.Open();
-                if (connection.Query<int>(string.Format("SELECT CAST(COUNT(*) AS INT) FROM {0} WHERE Id = @Id", collectionName), record).Single() == 0)
+                if (connection.Query<int>(string.Format("SELECT CAST(COUNT(*) AS INT) FROM [{0}] WHERE Id = @Id", collectionName), record).Single() == 0)
                 {
                     return connection.Execute(
-                        string.Format("INSERT INTO {0} (Id, Data) VALUES (@Id, @Data)", collectionName),
+                        string.Format("INSERT INTO [{0}] (Id, Data) VALUES (@Id, @Data)", collectionName),
                         record) > 0;
                 }
                 else
                 {
                     return connection.Execute(
-                        string.Format("Update {0} SET Data = @Data WHERE Id = @Id", collectionName), 
+                        string.Format("Update [{0}] SET Data = @Data WHERE Id = @Id", collectionName), 
                         record) > 0;
                 }
             }
@@ -242,7 +250,7 @@ namespace SqlNoSql.SqlClient
             {
                 connection.Open();
                 return connection.Execute(
-                    string.Format("DELETE FROM {0} WHERE Id = @Id", collectionName),
+                    string.Format("DELETE FROM [{0}] WHERE Id = @Id", collectionName),
                     new { Id = id }) > 0;
             }
         }
@@ -250,7 +258,7 @@ namespace SqlNoSql.SqlClient
         private void CreateJsonTable(string name, SqlConnection connection, IDbTransaction transaction)
         {
             connection.Execute(string.Format(
-                "CREATE TABLE {0} ( " +
+                "CREATE TABLE [{0}] ( " +
                 "Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL, " +
                 "Data NVARCHAR(MAX) NOT NULL)", name),
                 transaction: transaction);
@@ -259,7 +267,7 @@ namespace SqlNoSql.SqlClient
         private void CreateBsonTable(string name, SqlConnection connection, IDbTransaction transaction)
         {
             connection.Execute(string.Format(
-                "CREATE TABLE {0} ( " +
+                "CREATE TABLE [{0}] ( " +
                 "Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL, " +
                 "Data VARBINARY(MAX) NOT NULL)", name),
                 transaction: transaction);
@@ -273,7 +281,7 @@ namespace SqlNoSql.SqlClient
                 connection.Execute(
                     "IF (OBJECT_ID('_collections', 'U') IS NULL) " +
                     "BEGIN " +
-                    "CREATE TABLE _collections ( " +
+                    "CREATE TABLE [_collections] ( " +
                     "Name NVARCHAR(450) PRIMARY KEY NOT NULL, " +
                     "Format NVARCHAR(MAX) NOT NULL) " +
                     "END");
