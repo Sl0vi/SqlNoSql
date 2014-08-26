@@ -27,7 +27,7 @@ namespace SqlNoSql
     /// </summary>
     public enum StorageFormat : byte
     {
-        BSON = 0,
-        JSON = 1
+        JSON = 0,
+        BSON = 1
     }
 }

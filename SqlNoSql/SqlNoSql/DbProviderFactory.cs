@@ -22,10 +22,10 @@
 
 namespace SqlNoSql
 {
-    using SqlNoSql.SqlClient;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using SqlNoSql.SqlClient;
 
     public static class DbProviderFactory
     {

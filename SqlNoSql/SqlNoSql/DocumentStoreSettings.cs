@@ -41,16 +41,16 @@ namespace SqlNoSql
 
         /// <summary>
         /// The default document format that should be used for storing objects in the database.
-        /// This only affects newly created collection and can be explicitly set when creating collections.
+        /// This only affects newly created collections and can be explicitly set when creating collections.
         /// 
-        /// Default value is BSON.
+        /// Default value is JSON.
         /// </summary>
         public StorageFormat DefaultStorageFormat { get; set; }
 
         public DocumentStoreSettings()
         {
             this.EnableCache = false;
-            this.DefaultStorageFormat = StorageFormat.BSON;
+            this.DefaultStorageFormat = StorageFormat.JSON;
         }
     }
 }

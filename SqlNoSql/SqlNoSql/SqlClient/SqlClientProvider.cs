@@ -22,14 +22,17 @@
 
 namespace SqlNoSql.SqlClient
 {
-    using Dapper;
-    using SqlNoSql.Data;
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
     using System.Linq;
+    using Dapper;
+    using SqlNoSql.Data;
 
+    /// <summary>
+    /// This DbProvides provides support for Microsoft SQL Server databases.
+    /// </summary>
     public class SqlClientProvider : IDbProvider
     {
         private string connectionString;

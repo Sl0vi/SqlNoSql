@@ -23,9 +23,9 @@
 namespace SqlNoSql
 {
     using System;
-    using System.Reflection;
-    using System.Configuration;
     using System.Collections.Generic;
+    using System.Configuration;
+    using System.Reflection;
     using SqlNoSql.Data;
 
     public class DocumentStore : IDocumentStore

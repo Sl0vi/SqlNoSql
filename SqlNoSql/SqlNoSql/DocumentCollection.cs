@@ -22,11 +22,11 @@
 
 namespace SqlNoSql
 {
-    using SqlNoSql.Data;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using SqlNoSql.Data;
 
     public class DocumentCollection<T> : IDocumentCollection<T>
     {

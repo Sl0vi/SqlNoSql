@@ -22,10 +22,10 @@
 
 namespace SqlNoSql
 {
-    using SqlNoSql.Data;
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using SqlNoSql.Data;
 
     /// <summary>
     /// The interface used by providers for different databases.

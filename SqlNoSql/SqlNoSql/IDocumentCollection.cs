@@ -26,7 +26,7 @@ namespace SqlNoSql
     using System.Collections.Generic;
 
     /// <summary>
-    /// A collection of BSON or JSON documents that can be deserialized to the specified type.
+    /// A collection of JSON or BSON documents that can be deserialized to the specified type.
     /// </summary>
     /// <typeparam name="T">The type of objects contained in the collection</typeparam>
     public interface IDocumentCollection<T> : IEnumerable<KeyValuePair<Guid, T>>
@@ -43,12 +43,12 @@ namespace SqlNoSql
         string Name { get; }
 
         /// <summary>
-        /// The document format that data is saved in.
+        /// The document format that data is serialized to.
         /// </summary>
         StorageFormat Format { get; }
 
         /// <summary>
-        /// Gets the document with the provided id
+        /// Gets the document with the provided id.
         /// </summary>
         /// <param name="id">The id of the document</param>
         T Find(Guid id);
@@ -78,14 +78,14 @@ namespace SqlNoSql
         ICollection<KeyValuePair<Guid, T>> FilterWithIds(Func<T, bool> filter);
 
         /// <summary>
-        /// Adds or updates a document in the collection
+        /// Adds or updates a document in the collection.
         /// </summary>
         /// <param name="id">The id of the document</param>
         /// <param name="item">The object that is being stored in the collection</param>
         void AddOrUpdate(Guid id, T item);
 
         /// <summary>
-        /// Removes the document with the specified id from the collection
+        /// Removes the document with the specified id from the collection.
         /// </summary>
         /// <param name="id">The id of the document</param>
         void Remove(Guid id);
