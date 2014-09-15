@@ -192,8 +192,8 @@ namespace SqlNoSql.ConsoleDemo
 
             Console.WriteLine("Deleted 4 collections\nElapsed time: {0:c}", (end - begin));
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey(true);
+//            Console.WriteLine("Press any key to exit...");
+//            Console.ReadKey(true);
         }
     }
 }

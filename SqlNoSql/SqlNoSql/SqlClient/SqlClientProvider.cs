@@ -61,7 +61,7 @@ namespace SqlNoSql.SqlClient
 
         private void ReleaseConnection(IDbConnection connection)
         {
-            if (this.Transaction == null && !object.ReferenceEquals(this.Transaction.Connection, connection))
+            if (this.Transaction == null || !object.ReferenceEquals(this.Transaction.Connection, connection))
                 connection.Close();
         }
 
@@ -365,7 +365,7 @@ namespace SqlNoSql.SqlClient
             if (this.Transaction != null)
                 throw new Exception("There is already an open transaction");
             var connection = this.GetConnection();
-            var transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+            var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
             return this.Transaction = new SqlClientTransaction(this, transaction);
         }
 

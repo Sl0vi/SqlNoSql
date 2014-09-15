@@ -35,6 +35,7 @@ namespace SqlNoSql.SqlClient
         {
             this.Provider = provider;
             this.Transaction = transaction;
+            this.Connection = transaction.Connection;
         }
 
 
