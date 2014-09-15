@@ -27,7 +27,7 @@ namespace SqlNoSql.Data
     /// <summary>
     /// Represents a database record serialized as BSON
     /// </summary>
-    public class BsonRecord
+    public class BsonRecord : IRecord<byte[]>
     {
         public Guid Id { get; set; }
         public byte[] Data { get; set; }

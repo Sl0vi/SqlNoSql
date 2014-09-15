@@ -33,28 +33,50 @@ namespace SqlNoSql.SqlClient
     /// <summary>
     /// This DbProvides provides support for Microsoft SQL Server databases.
     /// </summary>
-    public class SqlClientProvider : IDbProvider
+    internal class SqlClientProvider : IDbProvider
     {
         private string connectionString;
         private IEnumerable<string> reservedNames = new[] { "_collections" };
 
+        internal SqlClientTransaction Transaction { get; set; }
+
         public SqlClientProvider(string connectionString)
         {
             this.connectionString = connectionString;
+            this.Transaction = null;
             this.CreateCollectionInfoTableIfNotExists();
         }
 
-        public IDbConnection GetConnection()
+        private IDbConnection GetConnection()
         {
-            return new SqlConnection(connectionString);
+            if (this.Transaction != null)
+                return this.Transaction.Connection;
+            else
+            {
+                var connection = new SqlConnection(connectionString);
+                connection.Open();
+                return connection;
+            }
+        }
+
+        private void ReleaseConnection(IDbConnection connection)
+        {
+            if (this.Transaction == null && !object.ReferenceEquals(this.Transaction.Connection, connection))
+                connection.Close();
         }
 
         public bool CollectionExists(string name)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
-                return connection.Query<int>("SELECT CAST(COUNT(*) AS INT) FROM _collections WHERE Name = @Name", new { Name = name }).Single() > 0;
+                return connection.Query<int>("SELECT CAST(COUNT(*) AS INT) FROM _collections WHERE Name = @Name", 
+                    new { Name = name },
+                    transaction: this.GetOpenTransactionOrNull(connection)).Single() > 0;
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
@@ -65,16 +87,22 @@ namespace SqlNoSql.SqlClient
 
         public IDocumentCollection<T> GetCollection<T>(string name)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 var collectionInfo = connection.Query<CollectionInfo>(
                     "SELECT Name, Format FROM _collections WHERE Name = @Name",
-                    new { Name = typeof(T).Name }).SingleOrDefault();
+                    new { Name = typeof(T).Name },
+                    transaction: this.GetOpenTransactionOrNull(connection))
+                    .SingleOrDefault();
                 if (collectionInfo != null)
                     return new DocumentCollection<T>(collectionInfo.Name, this, collectionInfo.Format);
                 else
                     return null;
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
@@ -92,29 +120,29 @@ namespace SqlNoSql.SqlClient
                     string.Format("A collection named '{0}' already exists", name),
                     name);
             }
-            using (var connection = this.GetConnection() as SqlConnection)
+            var isNewTransaction = this.Transaction == null;
+            var transaction = isNewTransaction ? this.BeginTransaction() as SqlClientTransaction : this.Transaction;
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction(IsolationLevel.Serializable))
-                {
-                    try
-                    {
-                        if (format == StorageFormat.BSON)
-                            this.CreateBsonTable(name, connection, transaction);
-                        else
-                            this.CreateJsonTable(name, connection, transaction);
-                        connection.Execute("INSERT INTO _collections (Name, Format) VALUES (@Name, @Format)", 
-                            new { Name = name, Format = format.ToString() },
-                            transaction: transaction);
-                        transaction.Commit();
-                        return true;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        return false;
-                    }
-                }
+                if (format == StorageFormat.BSON)
+                    this.CreateBsonTable(name, transaction.Connection, transaction.Transaction);
+                else
+                    this.CreateJsonTable(name, transaction.Connection, transaction.Transaction);
+                transaction.Connection.Execute("INSERT INTO _collections (Name, Format) VALUES (@Name, @Format)", 
+                    new { Name = name, Format = format.ToString() },
+                    transaction: transaction.Transaction);
+                if (isNewTransaction)
+                    transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                if (isNewTransaction)
+                    transaction.Dispose();
             }
         }
 
@@ -127,26 +155,26 @@ namespace SqlNoSql.SqlClient
         {
             if (!this.CollectionExists(name))
                 return true;
-            using (var connection = this.GetConnection() as SqlConnection)
+            var isNewTransaction = this.Transaction == null;
+            var transaction = isNewTransaction ? this.BeginTransaction() as SqlClientTransaction : this.Transaction;
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction(IsolationLevel.Serializable))
-                {
-                    try
-                    {
-                        connection.Execute(string.Format("DROP TABLE [{0}]", name), transaction: transaction);
-                        connection.Execute("DELETE FROM _collections WHERE Name = @Name", 
-                            new { Name = name },
-                            transaction: transaction);
-                        transaction.Commit();
-                        return true;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        return false;
-                    }
-                }
+                transaction.Connection.Execute(string.Format("DROP TABLE [{0}]", name), transaction: transaction.Transaction);
+                transaction.Connection.Execute("DELETE FROM _collections WHERE Name = @Name", 
+                    new { Name = name },
+                    transaction: transaction.Transaction);
+                if (isNewTransaction)
+                    transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                if (isNewTransaction)
+                    transaction.Dispose();
             }
         }
 
@@ -157,108 +185,144 @@ namespace SqlNoSql.SqlClient
 
         public IEnumerable<CollectionInfo> CollectionInfos()
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
-                return connection.Query<CollectionInfo>("SELECT Name, Format FROM _collections");
+                return connection.Query<CollectionInfo>(
+                    "SELECT Name, Format FROM _collections",
+                    transaction: this.GetOpenTransactionOrNull(connection));
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
         public JsonRecord GetJsonRecord(Guid id, string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 return connection.Query<JsonRecord>(
                     string.Format("SELECT Id, Data FROM [{0}] WHERE Id = @Id", collectionName),
-                    new { Id = id }).SingleOrDefault();
+                    new { Id = id },
+                    transaction: this.GetOpenTransactionOrNull(connection)).SingleOrDefault();
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
         public BsonRecord GetBsonRecord(Guid id, string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 return connection.Query<BsonRecord>(
                     string.Format("SELECT Id, Data FROM [{0}] WHERE Id = @Id", collectionName),
-                    new { Id = id }).SingleOrDefault();
+                    new { Id = id },
+                    transaction: this.GetOpenTransactionOrNull(connection)).SingleOrDefault();
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
         public IEnumerable<JsonRecord> EnumerateJsonCollection(string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 foreach (var record in connection.Query<JsonRecord>(
                     string.Format("SELECT Id, Data FROM [{0}]", collectionName),
+                    transaction: this.GetOpenTransactionOrNull(connection),
                     buffered: false))
                 {
                     yield return record;
                 }
+                yield break;
             }
-            yield break;
+            finally
+            {
+                this.ReleaseConnection(connection);
+            }
         }
 
         public IEnumerable<BsonRecord> EnumerateBsonCollection(string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 foreach (var record in connection.Query<BsonRecord>(
                     string.Format("SELECT Id, Data FROM [{0}]", collectionName),
+                    transaction: this.GetOpenTransactionOrNull(connection),
                     buffered: false))
                 {
                     yield return record;
                 }
+                yield break;
             }
-            yield break;
+            finally
+            {
+                this.ReleaseConnection(connection);
+            }
         }
 
         public bool AddOrUpdateRecord(BsonRecord record, string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
-            {
-                connection.Open();
-                return connection.Execute(
-                    string.Format("INSERT INTO [{0}] (Id, Data) VALUES (@Id, @Data)", collectionName),
-                    record) > 0;
-            }
+            return this.AddOrUpdateRecord((IRecord<byte[]>)record, collectionName);
         }
 
         public bool AddOrUpdateRecord(JsonRecord record, string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            return this.AddOrUpdateRecord((IRecord<string>)record, collectionName);
+        }
+
+        private bool AddOrUpdateRecord<T>(IRecord<T> record, string collectionName)
+        {
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 if (connection.Query<int>(string.Format("SELECT CAST(COUNT(*) AS INT) FROM [{0}] WHERE Id = @Id", collectionName), record).Single() == 0)
                 {
                     return connection.Execute(
                         string.Format("INSERT INTO [{0}] (Id, Data) VALUES (@Id, @Data)", collectionName),
-                        record) > 0;
+                        record,
+                        transaction: this.GetOpenTransactionOrNull(connection)) > 0;
                 }
                 else
                 {
                     return connection.Execute(
-                        string.Format("Update [{0}] SET Data = @Data WHERE Id = @Id", collectionName), 
-                        record) > 0;
+                        string.Format("Update [{0}] SET Data = @Data WHERE Id = @Id", collectionName),
+                        record,
+                        transaction: this.GetOpenTransactionOrNull(connection)) > 0;
                 }
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
         public bool RemoveRecord(Guid id, string collectionName)
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 return connection.Execute(
                     string.Format("DELETE FROM [{0}] WHERE Id = @Id", collectionName),
-                    new { Id = id }) > 0;
+                    new { Id = id },
+                    transaction: this.GetOpenTransactionOrNull(connection)) > 0;
+            }
+            finally
+            {
+                this.ReleaseConnection(connection);
             }
         }
 
-        private void CreateJsonTable(string name, SqlConnection connection, IDbTransaction transaction)
+        private void CreateJsonTable(string name, IDbConnection connection, IDbTransaction transaction)
         {
             connection.Execute(string.Format(
                 "CREATE TABLE [{0}] ( " +
@@ -267,7 +331,7 @@ namespace SqlNoSql.SqlClient
                 transaction: transaction);
         }
 
-        private void CreateBsonTable(string name, SqlConnection connection, IDbTransaction transaction)
+        private void CreateBsonTable(string name, IDbConnection connection, IDbTransaction transaction)
         {
             connection.Execute(string.Format(
                 "CREATE TABLE [{0}] ( " +
@@ -278,17 +342,36 @@ namespace SqlNoSql.SqlClient
 
         private void CreateCollectionInfoTableIfNotExists()
         {
-            using (var connection = this.GetConnection() as SqlConnection)
+            var connection = this.GetConnection();
+            try
             {
-                connection.Open();
                 connection.Execute(
                     "IF (OBJECT_ID('_collections', 'U') IS NULL) " +
                     "BEGIN " +
                     "CREATE TABLE [_collections] ( " +
                     "Name NVARCHAR(450) PRIMARY KEY NOT NULL, " +
                     "Format NVARCHAR(MAX) NOT NULL) " +
-                    "END");
+                    "END",
+                    transaction: this.GetOpenTransactionOrNull(connection));
             }
+            finally
+            {
+                this.ReleaseConnection(connection);
+            }
+        }
+
+        public ITransaction BeginTransaction()
+        {
+            if (this.Transaction != null)
+                throw new Exception("There is already an open transaction");
+            var connection = this.GetConnection();
+            var transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+            return this.Transaction = new SqlClientTransaction(this, transaction);
+        }
+
+        private IDbTransaction GetOpenTransactionOrNull(IDbConnection connection)
+        {
+            return this.Transaction != null && object.ReferenceEquals(this.Transaction.Connection, connection) ? this.Transaction.Transaction : null;
         }
     }
 }

@@ -158,5 +158,10 @@ namespace SqlNoSql
         {
             provider.DeleteCollection(name);
         }
+
+        public ITransaction BeginTransaction()
+        {
+            return provider.BeginTransaction();
+        }
     }
 }

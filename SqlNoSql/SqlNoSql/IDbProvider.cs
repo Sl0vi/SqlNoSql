@@ -35,23 +35,85 @@ namespace SqlNoSql
     public interface IDbProvider
     {
         /// <summary>
-        /// Gets an unopened connection to the database.
+        /// Checks if the collection exists in the database
         /// </summary>
-        IDbConnection GetConnection();
         bool CollectionExists(string name);
+
+        /// <summary>
+        /// Returns a document collection for the given type
+        /// </summary>
         IDocumentCollection<T> GetCollection<T>();
+
+        /// <summary>
+        /// Returns the document for the given type with the specified name
+        /// </summary>
         IDocumentCollection<T> GetCollection<T>(string name);
+
+        /// <summary>
+        /// Creates a new collection with the specified name and storage format
+        /// </summary>
         bool CreateCollection(string name, StorageFormat format);
+
+        /// <summary>
+        /// Creates a new collection with the name of the given type and objects are stored in
+        /// the specified storage format
+        /// </summary>
         bool CreateCollection<T>(StorageFormat format);
+
+        /// <summary>
+        /// Deletes the collection with the specified name
+        /// </summary>
         bool DeleteCollection(string name);
+
+        /// <summary>
+        /// Deletes the collection with the name of the given type
+        /// </summary>
         bool DeleteCollection<T>();
+
+        /// <summary>
+        /// Returns a collection with information about all the collections in the 
+        /// document store
+        /// </summary>
         IEnumerable<CollectionInfo> CollectionInfos();
+
+        /// <summary>
+        /// Gets a JSON record from the database
+        /// </summary>
         JsonRecord GetJsonRecord(Guid id, string collectionName);
+
+        /// <summary>
+        /// Gets a BSON record from the database
+        /// </summary>
         BsonRecord GetBsonRecord(Guid id, string collectionName);
+
+        /// <summary>
+        /// Enumerates a collection of JSON documents
+        /// </summary>
         IEnumerable<JsonRecord> EnumerateJsonCollection(string collectionName);
+
+        /// <summary>
+        /// Enumerates a collection of BSON documents
+        /// </summary>
         IEnumerable<BsonRecord> EnumerateBsonCollection(string collectionName);
+
+        /// <summary>
+        /// Adds or updates the passed in BSON document
+        /// </summary>
         bool AddOrUpdateRecord(BsonRecord record, string collectionName);
+
+        /// <summary>
+        /// Adds or updates the passed in JSON document
+        /// </summary>
         bool AddOrUpdateRecord(JsonRecord record, string collectionName);
+
+        /// <summary>
+        /// Removes the record with the passed in id from the collection
+        /// </summary>
         bool RemoveRecord(Guid id, string collectionName);
+
+        /// <summary>
+        /// Begins a new database transaction
+        /// </summary>
+        ITransaction BeginTransaction();
     }
 }

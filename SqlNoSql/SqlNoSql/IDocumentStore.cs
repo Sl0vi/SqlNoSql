@@ -122,5 +122,10 @@ namespace SqlNoSql
         /// </summary>
         /// <param name="name">The name of the collection to delete</param>
         void DeleteCollection(string name);
+
+        /// <summary>
+        /// Begins a new transaction
+        /// </summary>
+        ITransaction BeginTransaction();
     }
 }
