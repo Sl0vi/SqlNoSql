@@ -7,12 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNoSql", "SqlNoSql\SqlNoS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNoSql.Tests", "SqlNoSql.Tests\SqlNoSql.Tests.csproj", "{A41FCC31-4039-459F-8100-A3C0B23B3F97}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{671CEA1C-7EFB-4F56-89DA-891DE48890AC}"
-	ProjectSection(SolutionItems) = preProject
-		NuGet.Config = NuGet.Config
-		NuGet.exe = NuGet.exe
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNoSql.ConsoleDemo", "SqlNoSql.ConsoleDemo\SqlNoSql.ConsoleDemo.csproj", "{996D6A17-D930-4C0D-BC17-90EE9860713A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{FF3A5FE9-7244-4ADA-BF69-CA4C47330CEB}"
@@ -45,7 +39,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = SqlNoSql\SqlNoSql.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
@@ -227,6 +220,7 @@ Global
 		$31.IncludeInstanceMembers = True
 		$31.IncludeStaticEntities = True
 		version = 0.3
+		StartupItem = SqlNoSql\SqlNoSql.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
