@@ -45,6 +45,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.42\lib\net40\Dapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\CollectionInfo.cs" />
@@ -59,7 +62,6 @@
     <Compile Include="Data\JsonRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlClient\SqlClientProvider.cs" />
-    <Compile Include="SqlMapper.cs" />
     <Compile Include="Data\BsonRecord.cs" />
     <Compile Include="StorageFormat.cs" />
     <Compile Include="ITransaction.cs" />
