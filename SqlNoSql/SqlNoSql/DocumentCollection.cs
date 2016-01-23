@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2014 Bernhard Johannessen
+// Copyright (c) 2014-2016 Bernhard Johannessen
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -65,7 +65,10 @@ namespace SqlNoSql
             this.Format = format;
         }
 
-        public DocumentCollection(string name, IDbProvider provider, StorageFormat format)
+        public DocumentCollection(
+            string name, 
+            IDbProvider provider, 
+            StorageFormat format)
         {
             this.Name = name;
             this.provider = provider;
@@ -99,7 +102,8 @@ namespace SqlNoSql
         }
 
         /// <summary>
-        /// Iterates over the collection and returns the first document that passes the filter.
+        /// Iterates over the collection and returns the first document that
+        /// passes the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
         public T Find(Func<T, bool> filter)
@@ -112,20 +116,26 @@ namespace SqlNoSql
         }
 
         /// <summary>
-        /// Iterates over the collection and returns the first document and its id that passes the filter.
+        /// Iterates over the collection and returns the first document and its
+        /// id that passes the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
         public KeyValuePair<Guid, T> FindWithId(Func<T, bool> filter)
         {
             if (this.Format == StorageFormat.BSON)
             {
-                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateBsonCollection(
+                        this.Name))
                 {
-                    var document = Serializer.DeserializeBson<dynamic>(record.Data);
+                    var document = Serializer.DeserializeBson<dynamic>(
+                        record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
-                            return new KeyValuePair<Guid, T>(record.Id, document);
+                            return new KeyValuePair<Guid, T>(
+                                record.Id,
+                                document);
                     }
                     else
                     {
@@ -136,13 +146,18 @@ namespace SqlNoSql
             }
             else
             {
-                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateJsonCollection(
+                        this.Name))
                 {
-                    var document = Serializer.DeserializeJson<dynamic>(record.Data);
+                    var document = Serializer.DeserializeJson<dynamic>(
+                        record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
-                            return new KeyValuePair<Guid, T>(record.Id, document);
+                            return new KeyValuePair<Guid, T>(
+                                record.Id, 
+                                document);
                     }
                     else
                     {
@@ -154,7 +169,8 @@ namespace SqlNoSql
         }
 
         /// <summary>
-        /// Iterates over the collection and returns all documents that pass the filter.
+        /// Iterates over the collection and returns all documents that pass the
+        /// filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
         public ICollection<T> Filter(Func<T, bool> filter)
@@ -162,7 +178,8 @@ namespace SqlNoSql
             var result = new Collection<T>();
             if (this.Format == StorageFormat.BSON)
             {
-                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateBsonCollection(this.Name))
                 {
                     var document = Serializer.DeserializeBson<T>(record.Data);
                     if (filter != null)
@@ -178,7 +195,8 @@ namespace SqlNoSql
             }
             else
             {
-                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateJsonCollection(this.Name))
                 {
                     var document = Serializer.DeserializeJson<T>(record.Data);
                     if (filter != null)
@@ -196,41 +214,56 @@ namespace SqlNoSql
         }
 
         /// <summary>
-        /// Iterates over the collection and returns all documents and their ids that pass the filter.
+        /// Iterates over the collection and returns all documents and their ids
+        /// that pass the filter.
         /// </summary>
         /// <param name="filter">The filter action</param>
-        public ICollection<KeyValuePair<Guid, T>> FilterWithIds(Func<T, bool> filter)
+        public ICollection<KeyValuePair<Guid, T>> FilterWithIds(
+            Func<T, bool> filter)
         {
             var result = new Collection<KeyValuePair<Guid, T>>();
             if (this.Format == StorageFormat.BSON)
             {
-                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateBsonCollection(this.Name))
                 {
                     var document = Serializer.DeserializeBson<T>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
-                            result.Add(new KeyValuePair<Guid, T>(record.Id, document));
+                            result.Add(new KeyValuePair<Guid, T>(
+                                record.Id, 
+                                document));
                     }
                     else
                     {
-                        result.Add(new KeyValuePair<Guid, T>(record.Id, document));
+                        result.Add(
+                            new KeyValuePair<Guid, T>(
+                                record.Id, 
+                                document));
                     }
                 }
             }
             else
             {
-                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateJsonCollection(this.Name))
                 {
                     var document = Serializer.DeserializeJson<T>(record.Data);
                     if (filter != null)
                     {
                         if (filter(document))
-                            result.Add(new KeyValuePair<Guid, T>(record.Id, document));
+                            result.Add(
+                                new KeyValuePair<Guid, T>(
+                                    record.Id, 
+                                    document));
                     }
                     else
                     {
-                        result.Add(new KeyValuePair<Guid, T>(record.Id, document));
+                        result.Add(
+                            new KeyValuePair<Guid, T>(
+                                record.Id, 
+                                document));
                     }
                 }
             }
@@ -241,17 +274,27 @@ namespace SqlNoSql
         /// Adds or updates a document in the collection
         /// </summary>
         /// <param name="id">The id of the document</param>
-        /// <param name="item">The object that is being stored in the collection</param>
+        /// <param name="item">
+        /// The object that is being stored in the collection
+        /// </param>
         public void AddOrUpdate(Guid id, T item)
         {
             if (this.Format == StorageFormat.BSON)
             {
-                var record = new BsonRecord { Id = id, Data = Serializer.SerializeBson<T>(item) };
+                var record = new BsonRecord 
+                { 
+                    Id = id, 
+                    Data = Serializer.SerializeBson<T>(item) 
+                };
                 provider.AddOrUpdateRecord(record, this.Name);
             }
             else
             {
-                var record = new JsonRecord { Id = id, Data = Serializer.SerializeJson<T>(item) };
+                var record = new JsonRecord 
+                { 
+                    Id = id, 
+                    Data = Serializer.SerializeJson<T>(item) 
+                };
                 provider.AddOrUpdateRecord(record, this.Name);
             }
         }
@@ -272,17 +315,23 @@ namespace SqlNoSql
         {
             if (this.Format == StorageFormat.BSON)
             {
-                foreach (var record in provider.EnumerateBsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateBsonCollection(this.Name))
                 {
-                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeBson<T>(record.Data));
+                    yield return new KeyValuePair<Guid, T>(
+                        record.Id, 
+                        Serializer.DeserializeBson<T>(record.Data));
                 }
                 yield break;
             }
             else
             {
-                foreach (var record in provider.EnumerateJsonCollection(this.Name))
+                foreach (var record in provider
+                    .EnumerateJsonCollection(this.Name))
                 {
-                    yield return new KeyValuePair<Guid, T>(record.Id, Serializer.DeserializeJson<T>(record.Data));
+                    yield return new KeyValuePair<Guid, T>(
+                        record.Id,
+                        Serializer.DeserializeJson<T>(record.Data));
                 }
                 yield break;
             }

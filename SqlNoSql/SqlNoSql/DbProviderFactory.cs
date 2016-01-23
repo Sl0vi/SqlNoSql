@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2014 Bernhard Johannessen
+// Copyright (c) 2014-2016 Bernhard Johannessen
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -29,7 +29,8 @@ namespace SqlNoSql
 
     public static class DbProviderFactory
     {
-        private static Dictionary<string, Type> providers = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> providers = 
+            new Dictionary<string, Type>();
 
         static DbProviderFactory()
         {
@@ -83,7 +84,8 @@ namespace SqlNoSql
         //}
 
         /// <summary>
-        /// Loads all DbProviders specified in the application configuration file.
+        /// Loads all DbProviders specified in the application configuration
+        /// file.
         /// </summary>
         private static void LoadFromConfig()
         {

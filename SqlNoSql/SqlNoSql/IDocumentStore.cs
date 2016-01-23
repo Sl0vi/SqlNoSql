@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2014 Bernhard Johannessen
+// Copyright (c) 2014-2016 Bernhard Johannessen
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,7 +27,8 @@ namespace SqlNoSql
     using SqlNoSql.Data;
 
     /// <summary>
-    /// The document store represents the database used for storing JSON or BSON documents.
+    /// The document store represents the database used for storing JSON or BSON
+    /// documents.
     /// </summary>
     public interface IDocumentStore
     {
@@ -38,7 +39,8 @@ namespace SqlNoSql
         bool CollectionExists(string name);
 
         /// <summary>
-        /// Checks if a collection with the same name as the passed in type exists in the document store.
+        /// Checks if a collection with the same name as the passed in type
+        /// exists in the document store.
         /// </summary>
         /// <typeparam name="T">The type to check for</typeparam>
         bool CollectionExists<T>();
@@ -55,14 +57,17 @@ namespace SqlNoSql
         IDocumentCollection<dynamic> Collection(string name);
 
         /// <summary>
-        /// Gets a document collection for the specified type. The name of the collection is assumed to
-        /// be the same as the name of the type.
+        /// Gets a document collection for the specified type. The name of the
+        /// collection is assumed to be the same as the name of the type.
         /// </summary>
-        /// <typeparam name="T">The type that is stored in the collection</typeparam>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         IDocumentCollection<T> Collection<T>();
 
         /// <summary>
-        /// Gets a document collection for the specified type with the specified name.
+        /// Gets a document collection for the specified type with the specified
+        /// name.
         /// </summary>
         /// <typeparam name="T">The type stored in the collection</typeparam>
         /// <param name="name">The name of the collection</param>
@@ -78,43 +83,65 @@ namespace SqlNoSql
         /// Creates a new dynamic collection and returns an instance of it.
         /// </summary>
         /// <param name="name">The name of the collection to create</param>
-        /// <param name="format">The document format that is used for storing objects in the database</param>
-        IDocumentCollection<dynamic> CreateCollection(string name, StorageFormat format);
+        /// <param name="format">
+        /// The document format that is used for storing objects in the database
+        /// </param>
+        IDocumentCollection<dynamic> CreateCollection(
+            string name,
+            StorageFormat format);
 
         /// <summary>
-        /// Creates a new collection for the specified type. The name of the collection that is
-        /// created is the same as the name of the type.
+        /// Creates a new collection for the specified type. The name of the
+        /// collection that is created is the same as the name of the type.
         /// </summary>
-        /// <typeparam name="T">The type that is stored in the collection</typeparam>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         IDocumentCollection<T> CreateCollection<T>();
 
         /// <summary>
-        /// Creates a new collection for the specified type. The name of the collection that is
-        /// created is the same as the name of the type.
+        /// Creates a new collection for the specified type. The name of the
+        /// collection that is created is the same as the name of the type.
         /// </summary>
-        /// <typeparam name="T">The type that is stored in the collection</typeparam>
-        /// <param name="format">The document format that is used for storing objects in the database</param>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
+        /// <param name="format">
+        /// The document format that is used for storing objects in the database
+        /// </param>
         IDocumentCollection<T> CreateCollection<T>(StorageFormat format);
 
         /// <summary>
-        /// Creates a new collection for the specified type with the specified name and returns an instance of it.
+        /// Creates a new collection for the specified type with the specified
+        /// name and returns an instance of it.
         /// </summary>
-        /// <typeparam name="T">The type that is stored in the collection</typeparam>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         /// <param name="name">The name of the collection</param>
         IDocumentCollection<T> CreateCollection<T>(string name);
 
         /// <summary>
-        /// Creates a new collection for the specified type with the specified name and returns an instance of it.
+        /// Creates a new collection for the specified type with the specified
+        /// name and returns an instance of it.
         /// </summary>
-        /// <typeparam name="T">The type that is stored in the collection</typeparam>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         /// <param name="name">The name of the collection</param>
-        /// <param name="format">The document format that is used for storing objects in the database</param>
-        IDocumentCollection<T> CreateCollection<T>(string name, StorageFormat format);
+        /// <param name="format">
+        /// The document format that is used for storing objects in the database
+        /// </param>
+        IDocumentCollection<T> CreateCollection<T>(
+            string name,
+            StorageFormat format);
 
         /// <summary>
         /// Deletes the collection that has the same name as the specified type.
         /// </summary>
-        /// <typeparam name="T">The type that is stored in the collection</typeparam>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         void DeleteCollection<T>();
 
         /// <summary>
