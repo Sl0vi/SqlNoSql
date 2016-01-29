@@ -48,6 +48,7 @@
     <Reference Include="Dapper">
       <HintPath>..\packages\Dapper.1.42\lib\net40\Dapper.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Data.Sqlite" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\CollectionInfo.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="ITransaction.cs" />
     <Compile Include="Data\IRecord.cs" />
     <Compile Include="SqlClient\SqlClientTransaction.cs" />
+    <Compile Include="MonoSqlite\MonoSqliteTransaction.cs" />
+    <Compile Include="MonoSqlite\MonoSqliteProvider.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -79,5 +82,8 @@
   -->
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoSqlite\" />
   </ItemGroup>
 </Project>
