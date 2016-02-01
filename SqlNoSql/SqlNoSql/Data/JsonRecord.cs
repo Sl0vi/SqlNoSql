@@ -32,7 +32,7 @@ namespace SqlNoSql.Data
         /// <summary>
         /// The id of the record.
         /// </summary>
-        public Guid Id { get; set; }
+        public virtual Guid Id { get; set; }
 
         /// <summary>
         /// The JSON serialized document.

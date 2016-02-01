@@ -20,16 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SqlNoSql.Data
+namespace SqlNoSql.MonoSqlite
 {
     using System;
+    using Data;
 
-    /// <summary>
-    /// Represents a database record serialized as BSON
-    /// </summary>
-    public class BsonRecord : IRecord<byte[]>
+    public class SqliteBsonRecord : BsonRecord
     {
-        public virtual Guid Id { get; set; }
-        public byte[] Data { get; set; }
+        private string IdString
+        { 
+            get
+            {
+                return Id.ToString();
+            }
+            set
+            {
+                Id = new Guid(value);
+            }
+        }
     }
 }

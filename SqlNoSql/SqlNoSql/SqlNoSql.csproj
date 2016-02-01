@@ -70,6 +70,8 @@
     <Compile Include="SqlClient\SqlClientTransaction.cs" />
     <Compile Include="MonoSqlite\MonoSqliteTransaction.cs" />
     <Compile Include="MonoSqlite\MonoSqliteProvider.cs" />
+    <Compile Include="MonoSqlite\SqliteJsonRecord.cs" />
+    <Compile Include="MonoSqlite\SqliteBsonRecord.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
