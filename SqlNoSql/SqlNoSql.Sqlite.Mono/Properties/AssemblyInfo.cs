@@ -25,7 +25,7 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle("SqlNoSql.Sqlite.Net")]
+[assembly: AssemblyTitle("SqlNoSql.Sqlite.Mono")]
 [assembly: AssemblyDescription(
     "Data access layer that allows you to use a SQL database as a document " +
     "store")]

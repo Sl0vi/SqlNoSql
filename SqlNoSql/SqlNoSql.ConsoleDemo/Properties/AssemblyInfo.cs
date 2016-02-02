@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SqlNoSql.ConsoleDemo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription(
+    "Data access layer that allows you to use a SQL database as a document " +
+    "store")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SqlNoSql.ConsoleDemo")]
