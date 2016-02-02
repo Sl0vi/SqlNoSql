@@ -82,6 +82,7 @@
     <Compile Include="Sqlite\SqliteJsonRecord.cs" />
     <Compile Include="Sqlite\SqliteProvider.cs" />
     <Compile Include="Sqlite\SqliteTransaction.cs" />
+    <Compile Include="DbProviderInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

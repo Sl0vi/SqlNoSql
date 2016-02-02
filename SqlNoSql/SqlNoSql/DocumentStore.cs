@@ -60,13 +60,6 @@ namespace SqlNoSql
             }
             var providerType = DbProviderFactory.GetType(
                 connectionString.ProviderName);
-            if (providerType == null)
-            {
-                throw new ConfigurationErrorsException(
-                    string.Format(
-                        "{0} is not a supported provider",
-                        connectionString.ProviderName));
-            }
             provider = (IDbProvider)Activator.CreateInstance(
                 providerType, 
                 new[] { connectionString.ConnectionString });

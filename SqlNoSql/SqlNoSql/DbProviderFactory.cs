@@ -25,36 +25,124 @@ namespace SqlNoSql
     using System;
     using System.Collections.Generic;
     using System.Configuration;
-    using SqlNoSql.SqlClient;
+    using System.Linq;
+    using System.Reflection;
+    using SqlClient;
 
+    /// <summary>
+    /// The db provider factory stores information about db providers needed to
+    /// load and instantiate them.
+    /// </summary>
     public static class DbProviderFactory
     {
-        private static Dictionary<string, Type> providers = 
-            new Dictionary<string, Type>();
+        private static Dictionary<string, DbProviderInfo> providers = 
+            new Dictionary<string, DbProviderInfo>();
 
         static DbProviderFactory()
         {
-            providers.Add("System.Data.SqlClient", typeof(SqlClientProvider));
+            providers.Add(
+                "System.Data.SqlClient",
+                new DbProviderInfo
+                {
+                    Type = typeof(SqlClientProvider)
+                });
+            providers.Add(
+                "System.Data.SQLite",
+                new DbProviderInfo
+                {
+                    ClassName = "SqlNoSql.Sqlite.Net.NetSqliteProvider",
+                    AssemblyName = "SqlNoSql.Sqlite.Net"
+                });
+            providers.Add(
+                "Mono.Data.Sqlite",
+                new DbProviderInfo
+                {
+                    ClassName = "SqlNoSql.Sqlite.Mono.MonoSqliteProvider",
+                    AssemblyName = "SqlNoSql.Sqlite.Mono"
+                });
+        }
+
+        /// <summary>
+        /// Registers a DbProvider with the factory. The full name of the class
+        /// will be used as the provider name.
+        /// </summary>
+        /// <typeparam name="T">The DbProvider type</typeparam>
+        public static void Register<T>()
+            where T : IDbProvider
+        {
+            providers.Add(
+                typeof(T).FullName,
+                new DbProviderInfo
+                {
+                    Type = typeof(T)
+                });
         }
 
         /// <summary>
         /// Registers a DbProvider with the factory.
         /// </summary>
+        /// <param name="providerName">
+        /// The name of the provider used during construction or in 
+        /// configuration file connection strings.
+        /// </param>
         /// <typeparam name="T">The DbProvider type</typeparam>
-        public static void Register<T>()
-            where T : IDbProvider, new()
+        public static void Register<T>(string providerName)
+            where T : IDbProvider
         {
-            providers.Add(typeof(T).FullName, typeof(T));
+            providers.Add(
+                providerName,
+                new DbProviderInfo
+                {
+                    Type = typeof(T)
+                });
         }
 
         /// <summary>
-        /// Registers a DbProvider with the passed in name.
+        /// Registers a DbProvider with the factory. The full class name will be
+        /// used as the provider name.
         /// </summary>
-        /// <typeparam name="T">The DbProvider type</typeparam>
-        /// <param name="name">The name of the DbProvider</param>
-        public static void Register<T>(string name)
+        /// <param name="className">
+        /// The full name of the class that implements the provider.
+        /// </param>
+        /// <param name="assemblyName">
+        /// The name of the assembly that contains the provider class.
+        /// </param>
+        public static void Register(string className, string assemblyName)
         {
-            providers.Add(name, typeof(T));
+            providers.Add(
+                className,
+                new DbProviderInfo
+                {
+                    ClassName = className,
+                    AssemblyName = assemblyName
+                });
+        }
+
+        /// <summary>
+        /// Registers a DbProvider with the factory.
+        /// </summary>
+        /// <param name="providerName"> 
+        /// The provider name used during construction and in configuration file
+        /// connection strings.
+        /// </param>
+        /// <param name="className"> 
+        /// The full name of the class that implements the provider.
+        /// </param>
+        /// <param name="assemblyName"> 
+        /// The name of the assembly that contains the provider class.
+        /// </param>
+        public static void Register(
+            string providerName,
+            string className, 
+            string assemblyName)
+        {
+            providers.Add(
+                providerName,
+                new DbProviderInfo
+                {
+                    ClassName = className,
+                    AssemblyName = assemblyName
+                });
         }
 
         /// <summary>
@@ -64,7 +152,41 @@ namespace SqlNoSql
         /// <param name="name">Name.</param>
         public static Type GetType(string name)
         {
-            return providers[name];
+            DbProviderInfo providerInfo;
+            if (providers.TryGetValue(name, out providerInfo))
+            {
+                if (providerInfo.Type != null)
+                    return providerInfo.Type;
+                try
+                {
+                    var assembly = Assembly.Load(providerInfo.AssemblyName);
+                    var type = assembly
+                        .GetTypes()
+                        .SingleOrDefault(x => 
+                            x.FullName == providerInfo.ClassName);
+                    if (type == null)
+                        throw new TypeLoadException(
+                            string.Format(
+                                "The class '{0}' was not found in assembly " +
+                                "'{1}'",
+                                providerInfo.ClassName,
+                                providerInfo.AssemblyName));
+                    return providerInfo.Type = type;
+                }
+                catch (Exception error)
+                {
+                    throw new TypeLoadException(
+                        string.Format(
+                            "The provider for '{0}' could not be loaded",
+                            name));
+                }
+            }
+            throw new ConfigurationErrorsException(
+                string.Format(
+                    "{0} is not registered with the provider factory, " +
+                    "make sure you register the provider before " +
+                    "initializing the document store",
+                    name));
         }
     }
 }
