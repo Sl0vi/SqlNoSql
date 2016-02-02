@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SqlNoSql.MonoSqlite
+namespace SqlNoSql.Sqlite
 {
     using System;
     using System.Collections.Generic;
@@ -28,24 +28,26 @@ namespace SqlNoSql.MonoSqlite
     using System.Linq;
     using Dapper;
     using Data;
-    using Mono.Data.Sqlite;
 
     /// <summary>
     /// This DbProvider provides support for sqlite databases using
     /// Mono.Data.Sqlite
     /// </summary>
-    public class MonoSqliteProvider : IDbProvider
+    public abstract class SqliteProvider : IDbProvider
     {
         private string connectionString;
         private string[] reservedNames = new[] { "_collections" };
 
-        internal MonoSqliteTransaction Transaction { get; set; }
+        internal SqliteTransaction Transaction { get; set; }
         
-        public MonoSqliteProvider(string connectionString)
+        protected SqliteProvider(string connectionString)
         {
             this.connectionString = connectionString;
             CreateCollectionInfoTableIfNotExists();
         }
+
+        protected abstract IDbConnection NewConnection(
+            string connectionString);
 
         private IDbConnection GetConnection()
         {
@@ -53,7 +55,7 @@ namespace SqlNoSql.MonoSqlite
                 return Transaction.Connection;
             else
             {
-                var connection = new SqliteConnection(connectionString);
+                var connection = NewConnection(connectionString);
                 connection.Open();
                 return connection;
             }
@@ -152,7 +154,7 @@ namespace SqlNoSql.MonoSqlite
                     name);
             var isNewTransaction = Transaction == null;
             var transaction = isNewTransaction ?
-                BeginTransaction() as MonoSqliteTransaction :
+                BeginTransaction() as SqliteTransaction :
                 Transaction;
             try
             {
@@ -226,7 +228,7 @@ namespace SqlNoSql.MonoSqlite
                 return true;
             var isNewTransaction = Transaction == null;
             var transaction = isNewTransaction ?
-                BeginTransaction() as MonoSqliteTransaction :
+                BeginTransaction() as SqliteTransaction :
                 Transaction;
             try
             {
@@ -465,7 +467,7 @@ namespace SqlNoSql.MonoSqlite
             var connection = GetConnection();
             var transaction = connection.BeginTransaction(
                 IsolationLevel.ReadCommitted);
-            return Transaction = new MonoSqliteTransaction(
+            return Transaction = new SqliteTransaction(
                 this,
                 transaction);
         }

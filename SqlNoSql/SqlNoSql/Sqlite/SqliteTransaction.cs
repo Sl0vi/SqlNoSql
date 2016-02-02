@@ -20,18 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SqlNoSql.MonoSqlite
+namespace SqlNoSql.Sqlite
 {
     using System.Data;
 
-    internal class MonoSqliteTransaction : ITransaction
+    public class SqliteTransaction : ITransaction
     {
-        public MonoSqliteProvider Provider { get; private set; }
+        public SqliteProvider Provider { get; private set; }
         public IDbTransaction Transaction { get; private set; }
         public IDbConnection Connection { get; private set; }
 
-        public MonoSqliteTransaction(
-            MonoSqliteProvider provider,
+        public SqliteTransaction(
+            SqliteProvider provider,
             IDbTransaction transaction)
         {
             this.Provider = provider;

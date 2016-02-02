@@ -20,23 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SqlNoSql.MonoSqlite
+namespace SqlNoSql.Sqlite.Net
 {
-    using System;
-    using Data;
+    using System.Data;
+    using System.Data.SQLite;
 
-    public class SqliteBsonRecord : BsonRecord
+    /// <summary>
+    /// This DbProvider provides support for sqlite databases using
+    /// Mono.Data.Sqlite
+    /// </summary>
+    public class NetSqliteProvider : SqliteProvider
     {
-        private string IdString
-        { 
-            get
-            {
-                return Id.ToString();
-            }
-            set
-            {
-                Id = new Guid(value);
-            }
+        public NetSqliteProvider(string connectionString)
+            : base(connectionString)
+        {
+        }
+
+        protected override IDbConnection NewConnection(string connectionString)
+        {
+            return new SQLiteConnection(connectionString);
         }
     }
 }
