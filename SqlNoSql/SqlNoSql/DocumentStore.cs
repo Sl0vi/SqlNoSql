@@ -82,6 +82,19 @@ namespace SqlNoSql
                 new[] { connectionString });
         }
 
+        /// <summary>
+        /// Creates a new DocumentStore instance
+        /// </summary>
+        /// <param name="dbProvider"> 
+        /// An instance of the DbProvider you want to use with the document
+        /// store
+        /// </param>
+        public DocumentStore(IDbProvider dbProvider)
+        {
+            this.Init();
+            provider = dbProvider;
+        }
+
         private void Init()
         {
             this.Settings = new DocumentStoreSettings();
