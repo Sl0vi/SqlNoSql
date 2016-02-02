@@ -178,7 +178,8 @@ namespace SqlNoSql
                     throw new TypeLoadException(
                         string.Format(
                             "The provider for '{0}' could not be loaded",
-                            name));
+                            name),
+                        error);
                 }
             }
             throw new ConfigurationErrorsException(
