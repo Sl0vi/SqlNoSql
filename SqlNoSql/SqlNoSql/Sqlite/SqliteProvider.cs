@@ -80,7 +80,7 @@ namespace SqlNoSql.Sqlite
                 connection.Execute(
                     "CREATE TABLE IF NOT EXISTS _collections ( " +
                     "Name TEXT PRIMARY KEY NOT NULL, " +
-                    "FORMAT TEXT PRIMARY KEY NOT NULL)");
+                    "FORMAT TEXT KEY NOT NULL)");
             }
             finally
             {
@@ -201,9 +201,9 @@ namespace SqlNoSql.Sqlite
         {
             connection.Execute(
                 string.Format(
-                    "CREATE TABLE {0} ( " +
+                    "CREATE TABLE [{0}] ( " +
                     "Id TEXT PRIMARY KEY NOT NULL, " +
-                    "Data TEXT NOT NULL",
+                    "Data TEXT NOT NULL)",
                     name),
                 transaction: transaction);
         }
@@ -215,9 +215,9 @@ namespace SqlNoSql.Sqlite
         {
             connection.Execute(
                 string.Format(
-                    "CREATE TABLE {0} ( " +
+                    "CREATE TABLE [{0}] ( " +
                     "Id TEXT PRIMARY KEY NOT NULL, " +
-                    "Data TEXT NOT NULL",
+                    "Data TEXT NOT NULL)",
                     name),
                 transaction: transaction);
         }
@@ -234,7 +234,7 @@ namespace SqlNoSql.Sqlite
             {
                 transaction.Connection.Execute(
                     string.Format(
-                        "DROP TABLE {0}",
+                        "DROP TABLE [{0}]",
                         name),
                     transaction: transaction.Transaction);
                 transaction.Connection.Execute(
@@ -286,7 +286,7 @@ namespace SqlNoSql.Sqlite
                     .Query<SqliteJsonRecord>(
                         string.Format(
                             "SELECT Id AS IdString, Data " +
-                            "FROM {0} " +
+                            "FROM [{0}] " +
                             "WHERE Id = @Id",
                             collectionName),
                         new { Id = id.ToString() },
@@ -308,7 +308,7 @@ namespace SqlNoSql.Sqlite
                     .Query<SqliteBsonRecord>(
                         string.Format(
                             "SELECT Id AS IdString, Data " +
-                            "FROM {0} " +
+                            "FROM [{0}] " +
                             "WHERE Id = @Id",
                             collectionName),
                         new { Id = id.ToString() },
@@ -330,7 +330,7 @@ namespace SqlNoSql.Sqlite
                 foreach (var record in connection.Query<SqliteJsonRecord>(
                     string.Format(
                         "SELECT Id AS IdString, Data " +
-                        "FROM {0}",
+                        "FROM [{0}]",
                         collectionName),
                     transaction: GetOpenTransactionOrNull(connection),
                     buffered: false))
@@ -354,7 +354,7 @@ namespace SqlNoSql.Sqlite
                 foreach (var record in connection.Query<SqliteBsonRecord>(
                     string.Format(
                         "SELECT Id AS IdString, Data " +
-                        "FROM {0}",
+                        "FROM [{0}]",
                         collectionName),
                     transaction: GetOpenTransactionOrNull(connection),
                     buffered: false))
@@ -371,34 +371,23 @@ namespace SqlNoSql.Sqlite
 
         public bool AddOrUpdateRecord(JsonRecord record, string collectionName)
         {
-            var jsonRecord = record as SqliteJsonRecord;
-            if (jsonRecord == null)
-                jsonRecord = new SqliteJsonRecord
-                {
-                    Id = record.Id,
-                    Data = record.Data
-                };
             return AddOrUpdate(
-                (IRecord<string>)jsonRecord,
+                record.Id,
+                record.Data,
                 collectionName);
         }
 
         public bool AddOrUpdateRecord(BsonRecord record, string collectionName)
         {
-            var bsonRecord = record as SqliteBsonRecord;
-            if (bsonRecord == null)
-                bsonRecord = new SqliteBsonRecord
-                {
-                    Id = record.Id,
-                    Data = record.Data
-                };
             return AddOrUpdate(
-                (IRecord<byte>)bsonRecord,
+                record.Id,
+                record.Data,
                 collectionName);
         }
 
         private bool AddOrUpdate<T>(
-            IRecord<T> record,
+            Guid id,
+            T data,
             string collectionName)
         {
             var connection = GetConnection();
@@ -408,30 +397,30 @@ namespace SqlNoSql.Sqlite
                     .Query<int>(
                         string.Format(
                             "SELECT CAST(COUNT(*) AS INT) " +
-                            "FROM {0} " +
+                            "FROM [{0}] " +
                             "WHERE Id = @Id",
                             collectionName),
-                        new { Id = record.Id.ToString() },
+                        new { Id = id.ToString() },
                         transaction: GetOpenTransactionOrNull(connection))
                     .Single() == 0)
                 {
                     return connection.Execute(
                         string.Format(
-                            "INSERT INTO {0} (Id, Data) " +
-                            "VALUES (@IdString, @Data)",
+                            "INSERT INTO [{0}] (Id, Data) " +
+                            "VALUES (@Id, @Data)",
                             collectionName),
-                        record,
+                        new { Id = id.ToString(), Data = data },
                         transaction: GetOpenTransactionOrNull(connection)) > 0;
                 }
                 else
                 {
                     return connection.Execute(
                         string.Format(
-                            "UPDATE {0} SET " +
+                            "UPDATE [{0}] SET " +
                             "Data = @Data " +
-                            "WHERE Id = @IdString",
+                            "WHERE Id = @Id",
                             collectionName),
-                        record,
+                        new { Id = id, Data = data },
                         transaction: GetOpenTransactionOrNull(connection)) > 0;
                 }
             }
@@ -448,7 +437,7 @@ namespace SqlNoSql.Sqlite
             {
                 return connection.Execute(
                     string.Format(
-                        "DELETE FROM {0} WHERE Id = @Id",
+                        "DELETE FROM [{0}] WHERE Id = @Id",
                         collectionName),
                     new { Id = id.ToString() },
                     transaction: GetOpenTransactionOrNull(connection)) > 0;
