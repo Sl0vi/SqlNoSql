@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SqlNoSql</id>
+    <version>0.5.1</version>
+    <authors>Bernhard Johannessen</authors>
+    <licenseUrl>https://github.com/Sl0vi/SqlNoSql/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Sl0vi/SqlNoSql</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Use your Sql Server as a NoSql JSON or BSON document store</description>
+    <tags>sql nosql json bson</tags>
+    <dependencies>
+      <dependency id="Dapper" version="1.4.2" />
+      <dependency id="Newtonsoft.Json" version="7.0.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="SqlNoSql/bin/MonoRelease/SqlNoSql.dll" target="lib" />
+    <file src="SqlNoSql/bin/MonoRelease/SqlNoSql.xml" target="lib" />
+    <file src="SqlNoSql.Sqlite.Mono/bin/MonoRelease/SqlNoSql.Sqlite.Mono.dll" target="lib" />
+    <file src="SqlNoSql.Sqlite.Mono/bin/MonoRelease/SqlNoSql.Sqlite.Mono.xml" target="lib" />
+    <file src="SqlNoSql.Sqlite.Net/bin/MonoRelease/SqlNoSql.Sqlite.Net.dll" target="lib" />
+    <file src="SqlNoSql.Sqlite.Net/bin/MonoRelease/SqlNoSql.Sqlite.Net.xml" target="lib" />
+  </files>
+</package>

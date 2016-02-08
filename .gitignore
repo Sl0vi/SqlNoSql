@@ -101,8 +101,12 @@ publish/
 SqlNoSql/packages/*
 !SqlNoSql/packages/repositories.config
 
+# Nuget package files
+*.nupkg
+
 #Allow NuGet.exe
 !NuGet.exe
+
 
 # Windows Azure Build Output
 csx
