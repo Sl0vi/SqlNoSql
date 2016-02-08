@@ -3,8 +3,8 @@ SqlNoSql
 
 **Use your SQL database as a NoSql JSON or BSON document store**
 
-This is an experiment at creating a data access layer for .Net and Mono that
-allows you to use an SQL database as a NoSql database.
+A data access layer that uses SQL databases as NoSQL JSON or BSON document
+stores.
 
 It works by serializing objects as either JSON or BSON to simple two column
 tables. One column for the id and one for the serialized data.
@@ -18,12 +18,20 @@ applying the filter. Therefore, the closer your data access layer is to the
 database the better. Preferably you should run your data access code on the same
 machine as the SQL Server.
 
+**Currently supported database providers:**
+
+- System.Data.SqlClient
+- System.Data.SQLite
+- Mono.Data.Sqlite
+
+*Currently only GUIDs are supported as keys*
+
 How to use
 --------------------------------------------------------------------------------
 
 Create a new instance of the DocumentStore class and either pass in a connection
 string and provider name, or pass in the name of the connection string in your
-configuration file. Currently only System.Data.SqlClient is supported. 
+configuration file.
 
 **Example connection string in App.config:**
 
@@ -39,7 +47,7 @@ configuration file. Currently only System.Data.SqlClient is supported.
 
     var documentStore = new DocumentStore("SqlNoSqlDemo");
 
-### Creating and deleting collections
+### Creating and deleting collections ###
 
 You can use the document store to create and delete collections. The document
 store creates a table named _collections that contains some metadata about each
@@ -72,7 +80,7 @@ when creating a collection. *The default is JSON*
     // Create a collection that serializes objects to BSON
     documentStore.CreateCollection<Product>(StorageFormat.BSON);
 
-### Working with collections
+### Working with collections ###
 
 The collection tables consist of two columns, an Id column that contains a
 unique identifier for each record and a data column that contains the record
@@ -149,37 +157,3 @@ performance.
     
     // Update the product
     documentStore.Collection<Product>()[product.Id] = product;
-
-Why make this?
---------------------------------------------------------------------------------
-
-I've always been a bit disappointed with the lack of support for NoSQL databases
-on .Net. All of the databases with open licenses usually have pretty bad drivers
-for .Net and the ones with really good drivers all seem to have restrictive
-licenses.
-
-Another issue is that if you are using Shared hosting for .Net then you are
-pretty much stuck with Microsoft SQL Server, or if lucky maybe you'll get MySQL
-as well.
-
-So I decided to try and see if it was feasible to use a RDBMS as a NoSQL
-document database by writing this data access layer.
-
-Notes
---------------------------------------------------------------------------------
-
-I was actually pretty impressed by just how well this has performed in my tests.
-If my code and the database are running on the same machine then querying data
-is actually pretty fast even on somewhat big datasets. I would still like to try 
-and improve performance as much as possible by implementing some caching, like
-an identity map.
-
-I would also like to implement support for more databases, currently I'm
-planning on adding SqlCE, SQLite and PostgreSQL.
-
-I'm also considering ways to implement navigation properties, that would allow
-you to reference and lazy load objects in other collections.
-
-Since we are using RDBMS databases and almost all of them have excellent support
-for transactions, I would like to implement proper transaction support in the
-data access layer.
