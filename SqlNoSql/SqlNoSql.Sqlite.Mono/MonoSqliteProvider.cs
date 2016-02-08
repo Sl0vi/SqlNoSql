@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Mono.Data.Sqlite;
+
 namespace SqlNoSql.Sqlite.Mono
 {
     using System.Data;
-    using Mono.Data.Sqlite;
 
     /// <summary>
     /// This DbProvider provides support for sqlite databases using
