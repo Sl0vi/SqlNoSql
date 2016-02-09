@@ -448,14 +448,15 @@ namespace SqlNoSql.Sqlite
             }
         }
 
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(
+            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
             if (Transaction != null)
                 throw new InvalidOperationException(
                     "There is already an open transaction");
             var connection = GetConnection();
             var transaction = connection.BeginTransaction(
-                IsolationLevel.ReadCommitted);
+                isolationLevel);
             return Transaction = new SqliteTransaction(
                 this,
                 transaction);

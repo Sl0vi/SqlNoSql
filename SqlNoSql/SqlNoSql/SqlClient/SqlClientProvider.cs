@@ -431,13 +431,14 @@ namespace SqlNoSql.SqlClient
             }
         }
 
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(
+            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
             if (this.Transaction != null)
                 throw new Exception("There is already an open transaction");
             var connection = this.GetConnection();
             var transaction = connection.BeginTransaction(
-                IsolationLevel.ReadCommitted);
+                isolationLevel);
             return this.Transaction = new SqlClientTransaction(
                 this, 
                 transaction);

@@ -115,6 +115,7 @@ namespace SqlNoSql
         /// <summary>
         /// Begins a new database transaction
         /// </summary>
-        ITransaction BeginTransaction();
+        ITransaction BeginTransaction(
+            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
     }
 }
