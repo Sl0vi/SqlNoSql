@@ -28,6 +28,9 @@ namespace SqlNoSql
     using System.Collections.ObjectModel;
     using SqlNoSql.Data;
 
+    /// <summary>
+    /// A collection of JSON or BSON documents
+    /// </summary>
     public class DocumentCollection<T> : IDocumentCollection<T>
     {
         private IDbProvider provider;
@@ -35,7 +38,7 @@ namespace SqlNoSql
         /// <summary>
         /// Gets or sets the document with the provided id.
         /// </summary>
-        /// <param name="id">The id of the document</param>
+        /// <param name="key">The key of the document</param>
         public T this[Guid key]
         {
             get
@@ -58,6 +61,15 @@ namespace SqlNoSql
         /// </summary>
         public StorageFormat Format { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of a document collection
+        /// </summary>
+        /// <param name="provider">
+        /// The database provider used in the collection
+        /// </param>
+        /// <param name="format">
+        /// The format used to store documents in the collection
+        /// </param>
         public DocumentCollection(IDbProvider provider, StorageFormat format)
         {
             this.Name = typeof(T).Name;
@@ -65,6 +77,18 @@ namespace SqlNoSql
             this.Format = format;
         }
 
+        /// <summary>
+        /// Initializes a new instance of a document collection
+        /// </summary>
+        /// <param name="name"> 
+        /// The name of the collection
+        /// </param>
+        /// <param name="provider">
+        /// The database provider used in the collection
+        /// </param>
+        /// <param name="format">
+        /// The format used to store documents in the collection
+        /// </param>
         public DocumentCollection(
             string name, 
             IDbProvider provider, 
