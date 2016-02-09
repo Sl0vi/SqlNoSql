@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SqlNoSql</id>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
     <authors>Bernhard Johannessen</authors>
     <licenseUrl>https://github.com/Sl0vi/SqlNoSql/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Sl0vi/SqlNoSql</projectUrl>
