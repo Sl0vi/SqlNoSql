@@ -51,6 +51,11 @@ namespace SqlNoSql
         StorageFormat Format { get; }
 
         /// <summary>
+        /// Gets the number of items stored in the collection.
+        /// </summary>
+        int Count { get; }
+
+        /// <summary>
         /// Gets the document with the provided id.
         /// </summary>
         /// <param name="id">The id of the document</param>

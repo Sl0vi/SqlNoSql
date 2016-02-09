@@ -62,6 +62,17 @@ namespace SqlNoSql
         public StorageFormat Format { get; private set; }
 
         /// <summary>
+        /// Gets the number of items stored in the collection.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return provider.GetItemCount(Name);
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of a document collection
         /// </summary>
         /// <param name="provider">

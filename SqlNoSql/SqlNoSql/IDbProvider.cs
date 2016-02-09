@@ -50,6 +50,11 @@ namespace SqlNoSql
         IDocumentCollection<T> GetCollection<T>(string name);
 
         /// <summary>
+        /// Gets the number of items stored in the collection.
+        /// </summary>
+        int GetItemCount(string collectionName);
+
+        /// <summary>
         /// Creates a new collection with the specified name and storage format
         /// </summary>
         bool CreateCollection(string name, StorageFormat format);

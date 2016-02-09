@@ -137,6 +137,25 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        public int GetItemCount(string collectionName)
+        {
+            var connection = GetConnection();
+            try
+            {
+                return connection
+                    .Query<int>(
+                        string.Format(
+                            "SELECT CAST(COUNT(*) AS INT) " +
+                            "FROM [{0}]",
+                            collectionName))
+                    .Single();
+            }
+            finally
+            {
+                ReleaseConnection(connection);
+            }
+        }
+
         public bool CreateCollection(string name, StorageFormat format)
         {
             if (reservedNames.Any(x =>
