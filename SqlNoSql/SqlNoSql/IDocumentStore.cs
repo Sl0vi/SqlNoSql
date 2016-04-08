@@ -23,8 +23,7 @@
 namespace SqlNoSql
 {
     using System.Collections.Generic;
-    using System.Data;
-    using SqlNoSql.Data;
+    using Data;
 
     /// <summary>
     /// The document store represents the database used for storing JSON or BSON

@@ -29,7 +29,14 @@ namespace SqlNoSql.Data
     /// </summary>
     public class BsonRecord : IRecord<byte[]>
     {
+        /// <summary>
+        /// The id of the record
+        /// </summary>
         public virtual Guid Id { get; set; }
+        
+        /// <summary>
+        /// The record data
+        /// </summary>
         public byte[] Data { get; set; }
     }
 }

@@ -25,13 +25,19 @@ namespace SqlNoSql
     using System;
     using System.Collections.Generic;
     using System.Configuration;
-    using System.Reflection;
-    using SqlNoSql.Data;
+    using Data;
 
+    /// <summary>
+    /// The document store represents the database used for storing JSON or BSON
+    /// documents.
+    /// </summary>
     public class DocumentStore : IDocumentStore
     {
         private IDbProvider provider;
-
+        
+        /// <summary>
+        /// Settings for the document store
+        /// </summary>
         public DocumentStoreSettings Settings { get; set; }
 
         /// <summary>
@@ -100,36 +106,69 @@ namespace SqlNoSql
             this.Settings = new DocumentStoreSettings();
         }
 
+        /// <summary>
+        /// Checks if a collection exists in the document store.
+        /// </summary>
+        /// <param name="name">The name of the collection to check for</param>
         public bool CollectionExists(string name)
         {
             return provider.CollectionExists(name);
         }
 
+        /// <summary>
+        /// Checks if a collection with the same name as the passed in type
+        /// exists in the document store.
+        /// </summary>
+        /// <typeparam name="T">The type to check for</typeparam>
         public bool CollectionExists<T>()
         {
             return provider.CollectionExists(typeof(T).Name);
         }
 
+        /// <summary>
+        /// Gets information about all collections in the document store.
+        /// </summary>
         public IEnumerable<CollectionInfo> CollectionInfos()
         {
             return provider.CollectionInfos();
         }
 
+        /// <summary>
+        /// Gets a dynamic document collection by its name.
+        /// </summary>
+        /// <param name="name">The name of the collection</param>
         public IDocumentCollection<dynamic> Collection(string name)
         {
             return provider.GetCollection<dynamic>(name);
         }
 
+        /// <summary>
+        /// Gets a document collection for the specified type. The name of the
+        /// collection is assumed to be the same as the name of the type.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         public IDocumentCollection<T> Collection<T>()
         {
             return provider.GetCollection<T>();
         }
 
+        /// <summary>
+        /// Gets a document collection for the specified type with the specified
+        /// name.
+        /// </summary>
+        /// <typeparam name="T">The type stored in the collection</typeparam>
+        /// <param name="name">The name of the collection</param>
         public IDocumentCollection<T> Collection<T>(string name)
         {
             return provider.GetCollection<T>(name);
         }
 
+        /// <summary>
+        /// Creates a new dynamic collection and returns an instance of it.
+        /// </summary>
+        /// <param name="name">The name of the collection to create</param>
         public IDocumentCollection<dynamic> CreateCollection(string name)
         {
             if (!provider.CreateCollection(
@@ -142,6 +181,13 @@ namespace SqlNoSql
             return provider.GetCollection<dynamic>(name);
         }
 
+        /// <summary>
+        /// Creates a new dynamic collection and returns an instance of it.
+        /// </summary>
+        /// <param name="name">The name of the collection to create</param>
+        /// <param name="format">
+        /// The document format that is used for storing objects in the database
+        /// </param>
         public IDocumentCollection<dynamic> CreateCollection(
             string name,
             StorageFormat format)
@@ -154,6 +200,13 @@ namespace SqlNoSql
             return provider.GetCollection<dynamic>(name);
         }
 
+        /// <summary>
+        /// Creates a new collection for the specified type. The name of the
+        /// collection that is created is the same as the name of the type.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         public IDocumentCollection<T> CreateCollection<T>()
         {
             if (!provider.CreateCollection<T>(
@@ -164,6 +217,16 @@ namespace SqlNoSql
             return provider.GetCollection<T>();
         }
 
+        /// <summary>
+        /// Creates a new collection for the specified type. The name of the
+        /// collection that is created is the same as the name of the type.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
+        /// <param name="format">
+        /// The document format that is used for storing objects in the database
+        /// </param>
         public IDocumentCollection<T> CreateCollection<T>(StorageFormat format)
         {
             if (!provider.CreateCollection<T>(format))
@@ -173,6 +236,14 @@ namespace SqlNoSql
             return provider.GetCollection<T>();
         }
 
+        /// <summary>
+        /// Creates a new collection for the specified type with the specified
+        /// name and returns an instance of it.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
+        /// <param name="name">The name of the collection</param>
         public IDocumentCollection<T> CreateCollection<T>(string name)
         {
             if (!provider.CreateCollection(
@@ -184,6 +255,17 @@ namespace SqlNoSql
             return provider.GetCollection<T>(name);
         }
 
+        /// <summary>
+        /// Creates a new collection for the specified type with the specified
+        /// name and returns an instance of it.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
+        /// <param name="name">The name of the collection</param>
+        /// <param name="format">
+        /// The document format that is used for storing objects in the database
+        /// </param>
         public IDocumentCollection<T> CreateCollection<T>(
             string name,
             StorageFormat format)
@@ -195,16 +277,29 @@ namespace SqlNoSql
             return provider.GetCollection<T>(name);
         }
 
+        /// <summary>
+        /// Deletes the collection that has the same name as the specified type.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that is stored in the collection
+        /// </typeparam>
         public void DeleteCollection<T>()
         {
             provider.DeleteCollection<T>();
         }
 
+        /// <summary>
+        /// Deletes the collection with the specified name.
+        /// </summary>
+        /// <param name="name">The name of the collection to delete</param>
         public void DeleteCollection(string name)
         {
             provider.DeleteCollection(name);
         }
 
+        /// <summary>
+        /// Begins a new transaction
+        /// </summary>
         public ITransaction BeginTransaction()
         {
             return provider.BeginTransaction();

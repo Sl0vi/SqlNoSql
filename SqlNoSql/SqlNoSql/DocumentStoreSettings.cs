@@ -52,6 +52,10 @@ namespace SqlNoSql
         /// </summary>
         public StorageFormat DefaultStorageFormat { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:SqlNoSql.DocumentStoreSettings"/> class.
+        /// </summary>
         public DocumentStoreSettings()
         {
             this.EnableCache = false;

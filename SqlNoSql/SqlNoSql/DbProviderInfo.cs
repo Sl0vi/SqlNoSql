@@ -23,11 +23,25 @@
 namespace SqlNoSql
 {
     using System;
-
+    
+    /// <summary>
+    /// Information about a DbProvider.
+    /// </summary>
     internal class DbProviderInfo
     {
+        /// <summary>
+        /// The type that implements the DbProvider
+        /// </summary>
         public Type Type { get; set; }
+        
+        /// <summary>
+        /// The full name of the class that implements the DbProvider
+        /// </summary>
         public string ClassName { get; set; }
+        
+        /// <summary>
+        /// The name of the assembly that contains the DbProvider
+        /// </summary>
         public string AssemblyName { get; set; }
     }
 }

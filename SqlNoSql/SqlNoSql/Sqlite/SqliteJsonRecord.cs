@@ -25,6 +25,9 @@ namespace SqlNoSql.Sqlite
     using System;
     using Data;
 
+    /// <summary>
+    /// A JSON record for persisting data in a SQLite database
+    /// </summary>
     public class SqliteJsonRecord : JsonRecord
     {
         private string IdString
