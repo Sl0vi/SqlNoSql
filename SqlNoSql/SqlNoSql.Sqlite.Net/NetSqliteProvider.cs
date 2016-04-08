@@ -27,15 +27,25 @@ namespace SqlNoSql.Sqlite.Net
 
     /// <summary>
     /// This DbProvider provides support for sqlite databases using
-    /// Mono.Data.Sqlite
+    /// System.Data.Sqlite
     /// </summary>
     public class NetSqliteProvider : SqliteProvider
     {
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:SqlNoSql.Sqlite.Net.NetSqliteProvider"/> class.
+        /// </summary>
+        /// <param name="connectionString">
+        /// Connection string to the database
+        /// </param>
         public NetSqliteProvider(string connectionString)
             : base(connectionString)
         {
         }
 
+        /// <summary>
+        /// Returns a new database connection
+        /// </summary>
         protected override IDbConnection NewConnection(string connectionString)
         {
             return new SQLiteConnection(connectionString);

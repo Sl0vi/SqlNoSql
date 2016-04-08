@@ -24,9 +24,19 @@ namespace SqlNoSql.Data
 {
     using System;
 
+    /// <summary>
+    /// A record used in persisting data in collections
+    /// </summary>
     public interface IRecord<T>
     {
+        /// <summary>
+        /// The id of the record
+        /// </summary>
         Guid Id { get; set; }
+        
+        /// <summary>
+        /// The record data
+        /// </summary>
         T Data { get; set; }
     }
 }

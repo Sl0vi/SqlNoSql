@@ -32,11 +32,21 @@ namespace SqlNoSql.Sqlite.Mono
     /// </summary>
     public class MonoSqliteProvider : SqliteProvider
     {
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:SqlNoSql.Sqlite.Mono.MonoSqliteProvider"/> class.
+        /// </summary>
+        /// <param name="connectionString">
+        /// Connection string to the database
+        /// </param>
         public MonoSqliteProvider(string connectionString)
             : base(connectionString)
         {
         }
-
+        
+        /// <summary>
+        /// Returns a new database connection
+        /// </summary>
         protected override IDbConnection NewConnection(string connectionString)
         {
             return new SqliteConnection(connectionString);

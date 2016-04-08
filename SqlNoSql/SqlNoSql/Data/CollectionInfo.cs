@@ -22,9 +22,19 @@
 
 namespace SqlNoSql.Data
 {
+    /// <summary>
+    /// Information about a document collection
+    /// </summary>
     public class CollectionInfo
     {
+        /// <summary>
+        /// The name of the collection
+        /// </summary>
         public string Name { get; set; }
+        
+        /// <summary>
+        /// The storage format used to persist records in the collection
+        /// </summary>
         public StorageFormat Format { get; set; }
     }
 }

@@ -25,6 +25,9 @@ namespace SqlNoSql.Sqlite
     using System;
     using Data;
 
+    /// <summary>
+    /// A BSON record for persisting data in a SQLite database
+    /// </summary>
     public class SqliteBsonRecord : BsonRecord
     {
         private string IdString

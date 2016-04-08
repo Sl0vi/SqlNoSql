@@ -27,7 +27,14 @@ namespace SqlNoSql
     /// </summary>
     public enum StorageFormat : byte
     {
+        /// <summary>
+        /// Records are stored as JSON
+        /// </summary>
         JSON = 0,
+        
+        /// <summary>
+        /// Records are stored as BSON
+        /// </summary>
         BSON = 1
     }
 }

@@ -35,9 +35,16 @@ namespace SqlNoSql
     /// </summary>
     public static class DbProviderFactory
     {
+        /// <summary>
+        /// This dictionary stores all the DbProviders registered with the
+        /// factory
+        /// </summary>
         private static Dictionary<string, DbProviderInfo> providers = 
             new Dictionary<string, DbProviderInfo>();
 
+        /// <summary>
+        /// The contructor registers all the built in providers
+        /// </summary>
         static DbProviderFactory()
         {
             providers.Add(
@@ -148,8 +155,6 @@ namespace SqlNoSql
         /// <summary>
         /// Returns the type of the provider with the specified provider name.
         /// </summary>
-        /// <returns>The type.</returns>
-        /// <param name="name">Name.</param>
         public static Type GetType(string name)
         {
             DbProviderInfo providerInfo;
