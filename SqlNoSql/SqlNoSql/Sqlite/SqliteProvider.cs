@@ -40,12 +40,19 @@ namespace SqlNoSql.Sqlite
 
         internal SqliteTransaction Transaction { get; set; }
         
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:SqlNoSql.Sqlite.SqliteProvider"/> class.
+        /// </summary>
         protected SqliteProvider(string connectionString)
         {
             this.connectionString = connectionString;
             CreateCollectionInfoTableIfNotExists();
         }
-
+        
+        /// <summary>
+        /// Creates a new database connection
+        /// </summary>
         protected abstract IDbConnection NewConnection(
             string connectionString);
 
@@ -87,7 +94,10 @@ namespace SqlNoSql.Sqlite
                 ReleaseConnection(connection);
             }
         }
-
+        
+        /// <summary>
+        /// Checks if the collection exists in the database
+        /// </summary>
         public bool CollectionExists(string name)
         {
             var connection = GetConnection();
@@ -106,12 +116,18 @@ namespace SqlNoSql.Sqlite
                 ReleaseConnection(connection);
             }
         }
-
+        
+        /// <summary>
+        /// Returns a document collection for the given type
+        /// </summary>
         public IDocumentCollection<T> GetCollection<T>()
         {
             return GetCollection<T>(typeof(T).Name);
         }
 
+        /// <summary>
+        /// Returns the document for the given type with the specified name
+        /// </summary>
         public IDocumentCollection<T> GetCollection<T>(string name)
         {
             var connection = GetConnection();
@@ -136,7 +152,10 @@ namespace SqlNoSql.Sqlite
                 ReleaseConnection(connection);
             }
         }
-
+        
+        /// <summary>
+        /// Gets the number of items stored in the collection.
+        /// </summary>
         public int GetItemCount(string collectionName)
         {
             var connection = GetConnection();
@@ -156,6 +175,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Creates a new collection with the specified name and storage format
+        /// </summary>
         public bool CreateCollection(string name, StorageFormat format)
         {
             if (reservedNames.Any(x =>
@@ -207,7 +229,12 @@ namespace SqlNoSql.Sqlite
                     transaction.Dispose();
             }
         }
-
+        
+        /// <summary>
+        /// Creates a new collection with the name of the given type and objects
+        /// are stored in
+        /// the specified storage format
+        /// </summary>
         public bool CreateCollection<T>(StorageFormat format)
         {
             return CreateCollection(typeof(T).Name, format);
@@ -241,6 +268,9 @@ namespace SqlNoSql.Sqlite
                 transaction: transaction);
         }
 
+        /// <summary>
+        /// Deletes the collection with the specified name
+        /// </summary>
         public bool DeleteCollection(string name)
         {
             if (!CollectionExists(name))
@@ -276,11 +306,18 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Deletes the collection with the name of the given type
+        /// </summary>
         public bool DeleteCollection<T>()
         {
             return DeleteCollection(typeof(T).Name);
         }
 
+        /// <summary>
+        /// Returns a collection with information about all the collections in
+        /// the document store
+        /// </summary>
         public IEnumerable<CollectionInfo> CollectionInfos()
         {
             var connection = GetConnection();
@@ -296,6 +333,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Gets a JSON record from the database
+        /// </summary>
         public JsonRecord GetJsonRecord(Guid id, string collectionName)
         {
             var connection = GetConnection();
@@ -318,6 +358,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Gets a BSON record from the database
+        /// </summary>
         public BsonRecord GetBsonRecord(Guid id, string collectionName)
         {
             var connection = this.GetConnection();
@@ -340,6 +383,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Enumerates a collection of JSON documents
+        /// </summary>
         public IEnumerable<JsonRecord> EnumerateJsonCollection(
             string collectionName)
         {
@@ -364,6 +410,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Enumerates a collection of BSON documents
+        /// </summary>
         public IEnumerable<BsonRecord> EnumerateBsonCollection(
             string collectionName)
         {
@@ -388,6 +437,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Adds or updates the passed in BSON document
+        /// </summary>
         public bool AddOrUpdateRecord(JsonRecord record, string collectionName)
         {
             return AddOrUpdate(
@@ -396,6 +448,9 @@ namespace SqlNoSql.Sqlite
                 collectionName);
         }
 
+        /// <summary>
+        /// Adds or updates the passed in JSON document
+        /// </summary>
         public bool AddOrUpdateRecord(BsonRecord record, string collectionName)
         {
             return AddOrUpdate(
@@ -449,6 +504,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Removes the record with the passed in id from the collection
+        /// </summary>
         public bool RemoveRecord(Guid id, string collectionName)
         {
             var connection = GetConnection();
@@ -467,6 +525,9 @@ namespace SqlNoSql.Sqlite
             }
         }
 
+        /// <summary>
+        /// Begins a new database transaction
+        /// </summary>
         public ITransaction BeginTransaction(
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
